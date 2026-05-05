@@ -1,0 +1,62 @@
+import { motion } from 'framer-motion';
+
+export default function Hero() {
+  const scrollToProjects = () => {
+    const element = document.getElementById('projects-section');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <section className="relative w-full h-screen bg-black overflow-hidden flex flex-col justify-center shrink-0">
+      {/* Video Background Container */}
+      <div className="absolute top-0 right-0 w-[65%] h-full z-0">
+        <video 
+          autoPlay 
+          loop 
+          muted 
+          playsInline
+          className="w-full h-full object-cover"
+        >
+          <source src="/hero-videos/TestRender30001-0120.webm" type="video/webm" />
+        </video>
+      </div>
+
+      {/* Gradient Overlay - Specifically tuned stops to mask the sharp video edge */}
+      <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-r from-black from-[35%] via-black/70 via-[50%] to-transparent to-[80%]" />
+
+      {/* Hero Content */}
+      <div className="relative z-20 px-8 md:px-16 lg:px-24 w-full flex flex-col justify-center h-full">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="max-w-2xl text-white"
+        >
+          <p className="text-sm md:text-base font-semibold tracking-widest text-zinc-400 mb-4 uppercase">
+            Hello There!
+          </p>
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
+            I'm Alex Robertson
+          </h1>
+          <p className="text-lg md:text-xl text-zinc-300 mb-10 leading-relaxed font-light">
+            A passionate graphic designer specializing in immersive 3D landscapes, sleek brand identities, and futuristic visual experiences. Turning bold concepts into striking digital realities.
+          </p>
+          
+          <div className="flex flex-wrap gap-4">
+            <button 
+              onClick={scrollToProjects}
+              className="px-8 py-4 bg-white text-black font-semibold rounded-full hover:bg-zinc-200 transition-colors"
+            >
+              My Services
+            </button>
+            <button className="px-8 py-4 bg-transparent border border-white text-white font-semibold rounded-full hover:bg-white/10 transition-colors">
+              Contact Me
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
