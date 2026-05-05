@@ -16,7 +16,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
   // Replicate the image to mock a carousel
   const images = Array(4).fill(project.image);
 
-  const handleDragEnd = (e: any, info: any) => {
+  const handleDragEnd = (_: any, info: any) => {
     const offset = info.offset.x;
     const velocity = info.velocity.x;
 
@@ -59,7 +59,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-10"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-10"
     >
       <div 
         className="absolute inset-0 bg-black/80 backdrop-blur-md cursor-pointer" 
@@ -68,18 +68,18 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
       
       <motion.div
         layoutId={`project-${project.id}`}
-        className="relative w-full max-w-3xl aspect-square bg-zinc-900 rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col"
+        className="relative w-full h-full md:max-w-3xl md:aspect-square bg-zinc-900 rounded-none md:rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col"
       >
         <button 
           onClick={() => setNavStyle(prev => prev === 'pill' ? 'separated' : 'pill')}
-          className="absolute top-6 right-20 z-30 p-2.5 bg-black/40 hover:bg-black/70 backdrop-blur-md rounded-full text-white transition-all hover:scale-110 active:scale-95 border border-white/10"
+          className="hidden md:block absolute top-6 right-20 z-30 p-2.5 bg-black/40 hover:bg-black/70 backdrop-blur-md rounded-full text-white transition-all hover:scale-110 active:scale-95 border border-white/10"
           title="Toggle Navigation Style"
         >
           <Settings2 size={20} />
         </button>
         <button 
           onClick={onClose}
-          className="absolute top-6 right-6 z-30 p-2.5 bg-black/40 hover:bg-black/70 backdrop-blur-md rounded-full text-white transition-all hover:scale-110 active:scale-95 border border-white/10"
+          className="absolute top-6 left-6 md:left-auto md:right-6 z-30 p-3 md:p-2.5 bg-black/40 hover:bg-black/70 backdrop-blur-md rounded-full text-white transition-all hover:scale-110 active:scale-95 border border-white/10"
         >
           <X size={20} />
         </button>
@@ -108,16 +108,16 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
           </AnimatePresence>
 
           {/* Gradient Overlay for better UI contrast */}
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none z-10" />
+          <div className="absolute inset-x-0 bottom-0 h-48 md:h-40 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none z-10" />
           
-          <div className="absolute bottom-8 left-8 z-20 pointer-events-none">
-            <h2 className="text-3xl font-bold text-white mb-2">{project.title}</h2>
-            <p className="text-white/70 font-medium tracking-wide uppercase text-sm">{project.category}</p>
+          <div className="absolute bottom-24 left-6 md:bottom-8 md:left-8 z-20 pointer-events-none">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{project.title}</h2>
+            <p className="text-white/70 font-medium tracking-wide uppercase text-xs md:text-sm">{project.category}</p>
           </div>
 
           {/* Navigation UI Toggle */}
           {navStyle === 'pill' ? (
-            <div className="absolute bottom-8 right-8 z-30 flex items-center gap-3 bg-black/40 backdrop-blur-xl rounded-full p-2 border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+            <div className="absolute bottom-8 md:bottom-8 right-6 md:right-8 z-30 flex items-center gap-3 bg-black/40 backdrop-blur-xl rounded-full p-2 border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
               <button
                 onClick={() => paginate(-1)}
                 disabled={currentIndex === 0}
@@ -163,11 +163,11 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
           ) : (
             <>
               {/* Separated Navigation Arrows (Moved to bottom right) */}
-              <div className="absolute bottom-8 right-8 flex items-center gap-3 z-30 pointer-events-none">
+              <div className="absolute bottom-8 right-6 md:right-8 flex items-center gap-3 z-30 pointer-events-none">
                 <button
                   onClick={() => paginate(-1)}
                   disabled={currentIndex === 0}
-                  className={`p-3 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-md text-white transition-all pointer-events-auto border border-white/10 ${
+                  className={`p-4 md:p-3 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-md text-white transition-all pointer-events-auto border border-white/10 ${
                     currentIndex === 0 ? 'opacity-0 scale-90 cursor-default' : 'opacity-100 scale-100 hover:scale-110 active:scale-95'
                   }`}
                 >
@@ -176,7 +176,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                 <button
                   onClick={() => paginate(1)}
                   disabled={currentIndex === images.length - 1}
-                  className={`p-3 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-md text-white transition-all pointer-events-auto border border-white/10 ${
+                  className={`p-4 md:p-3 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-md text-white transition-all pointer-events-auto border border-white/10 ${
                     currentIndex === images.length - 1 ? 'opacity-0 scale-90 cursor-default' : 'opacity-100 scale-100 hover:scale-110 active:scale-95'
                   }`}
                 >

@@ -9,7 +9,7 @@ interface Props {
 
 const BentoView: React.FC<Props> = ({ projects, onProjectClick }) => {
   return (
-    <div className="grid grid-cols-4 auto-rows-[220px] gap-3 py-12 px-6 max-w-7xl mx-auto">
+    <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[160px] md:auto-rows-[220px] gap-3 md:gap-4 py-6 md:py-12 px-4 md:px-6 max-w-7xl mx-auto">
       {projects.map((project, index) => (
         <motion.div
           key={project.id}
@@ -18,19 +18,19 @@ const BentoView: React.FC<Props> = ({ projects, onProjectClick }) => {
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: index * 0.05 }}
           style={{
-            gridColumn: `span ${project.colSpan || 1}`,
+            gridColumn: `span ${Math.min(project.colSpan || 1, 2)}`,
           }}
           layoutId={`project-${project.id}`}
           onClick={() => onProjectClick(project)}
-          className="group relative overflow-hidden rounded-3xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300"
+          className="group relative overflow-hidden rounded-2xl md:rounded-3xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300"
         >
           <img
             src={project.image}
             alt={project.title}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
-          <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-md p-4 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 ease-out z-10 flex justify-between items-center">
-            <span className="text-white font-bold text-sm truncate mr-2">{project.title}</span>
+          <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-md p-3 md:p-4 translate-y-0 md:translate-y-[100%] md:group-hover:translate-y-0 transition-transform duration-300 ease-out z-10 flex justify-between items-center">
+            <span className="text-white font-bold text-xs md:text-sm truncate mr-2">{project.title}</span>
             <span className="text-white/70 text-[10px] font-medium whitespace-nowrap">{project.date}</span>
           </div>
         </motion.div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaInstagram, FaTiktok, FaDiscord } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
+import { Menu, X } from 'lucide-react';
 import penroseIcon from '../assets/penrose.png';
 
 interface NavbarProps {
@@ -20,6 +21,16 @@ const socialLinks = [
 export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [phase, setPhase] = useState<'text' | 'gleam' | 'glitch-out' | 'icon' | 'glitch-in'>('text');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isMobileMenuOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -79,7 +90,7 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -100, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 100, damping: 20 }}
-            className={`fixed top-0 left-0 right-0 z-[49] h-[90px] backdrop-blur-xl border-b transition-colors duration-500
+            className={`fixed top-0 left-0 right-0 z-[49] h-[60px] md:h-[90px] backdrop-blur-xl border-b transition-colors duration-500
               ${isDark 
                 ? 'bg-white/70 border-white/20 shadow-sm' 
                 : 'bg-zinc-900/70 border-zinc-800 shadow-2xl shadow-black/20'
@@ -89,11 +100,11 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
       </AnimatePresence>
  
       {/* Main Content Layer */}
-      <nav className="fixed top-0 left-0 right-0 z-[50] h-[90px] px-10">
+      <nav className="fixed top-0 left-0 right-0 z-[50] h-[60px] md:h-[90px] px-5 md:px-10">
         <div className="h-full max-w-[1800px] mx-auto flex items-center justify-between">
           
           {/* Left: Social Icons (Properly Vertically Centered) */}
-          <div className="flex-1 flex items-center gap-6">
+          <div className="flex-1 hidden md:flex items-center gap-6">
             {socialLinks.map((social, index) => (
               <motion.a
                 key={social.label}
@@ -143,7 +154,7 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
               </AnimatePresence>
 
               {/* The Text (Provides Container Width) */}
-              <h1 className={`text-xl font-black uppercase tracking-[0.25em] transition-all duration-500 leading-none mb-[-2px] whitespace-nowrap
+              <h1 className={`text-lg md:text-xl font-black uppercase tracking-[0.2em] md:tracking-[0.25em] transition-all duration-500 leading-none mb-[-2px] whitespace-nowrap
                 ${textColor} font-['Outfit'] 
                 ${phase === 'gleam' ? `animate-gleam ${gleamColorClass}` : ''}
                 ${phase === 'glitch-out' ? 'glitch-out' : ''}
@@ -158,7 +169,17 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
 
           {/* Right: Navigation & Theme (Properly Vertically Centered) */}
           <div className="flex-1 flex items-center justify-end gap-10">
-            <div className={`flex gap-8 text-[13px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${textColor} font-['Outfit']`}>
+            {/* Mobile Hamburger Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className={`md:hidden p-2 rounded-full transition-colors ${textColor} hover:bg-white/10`}
+              aria-label="Open menu"
+            >
+              <Menu size={24} />
+            </button>
+
+            {/* Desktop Nav */}
+            <div className={`hidden md:flex gap-8 text-[13px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${textColor} font-['Outfit']`}>
               <a href="#" className="hover:opacity-50 transition-all hover:tracking-[0.3em]">Home</a>
               <a href="#" className="hover:opacity-50 transition-all hover:tracking-[0.3em]">Contact</a>
             </div>
@@ -166,7 +187,7 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
 
             <button 
               onClick={toggleTheme}
-              className={`p-2.5 rounded-full transition-all duration-500 border pointer-events-auto
+              className={`hidden md:flex p-2.5 rounded-full transition-all duration-500 border pointer-events-auto
                 ${isScrolled
                   ? (isDark 
                       ? 'bg-zinc-900/5 border-zinc-900/10 hover:bg-zinc-900/20' 
@@ -185,6 +206,77 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
 
         </div>
       </nav>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={`fixed inset-0 z-[100] flex flex-col justify-center items-center ${isDark ? 'bg-zinc-950' : 'bg-white'}`}
+          >
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`absolute top-6 right-5 p-2 rounded-full transition-colors ${isDark ? 'text-white hover:bg-white/10' : 'text-zinc-900 hover:bg-black/10'}`}
+              aria-label="Close menu"
+            >
+              <X size={28} />
+            </button>
+
+            <div className={`flex flex-col items-center gap-10 font-['Outfit'] font-black uppercase tracking-[0.2em] text-2xl ${isDark ? 'text-white' : 'text-zinc-900'}`}>
+              <motion.a
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                href="#"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="hover:opacity-50 transition-all hover:tracking-[0.3em]"
+              >
+                Home
+              </motion.a>
+              <motion.a
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                href="#"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="hover:opacity-50 transition-all hover:tracking-[0.3em]"
+              >
+                Contact
+              </motion.a>
+
+              <motion.button
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                onClick={() => { toggleTheme(); setIsMobileMenuOpen(false); }}
+                className="mt-4 flex items-center gap-3 text-sm opacity-60 hover:opacity-100 transition-opacity"
+              >
+                {isDark ? 'Light Mode' : 'Dark Mode'}
+              </motion.button>
+            </div>
+
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="absolute bottom-12 flex gap-8"
+            >
+              {socialLinks.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  className={`transition-all duration-300 transform hover:-translate-y-1 ${isDark ? 'text-white/60 hover:text-white' : 'text-zinc-500 hover:text-zinc-900'}`}
+                  aria-label={social.label}
+                >
+                  <social.icon size={24} />
+                </a>
+              ))}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
