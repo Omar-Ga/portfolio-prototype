@@ -7,6 +7,8 @@ import GalleryView from './components/GalleryView';
 import { projects, type Project } from './data/projects';
 import { AnimatePresence, motion } from 'framer-motion';
 import ProjectModal from './components/ProjectModal';
+import { FaInstagram, FaTiktok, FaDiscord } from 'react-icons/fa';
+import { MdEmail } from 'react-icons/md';
 
 function App() {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -64,21 +66,35 @@ function App() {
         </div>
       </div>
 
-      <footer className={`border-t py-12 px-6 ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-sm text-gray-500">
-            © 2026 Portfolio.3D. Built for demonstration.
+      <footer className={`border-t py-12 px-10 ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
+        <div className="max-w-[1800px] mx-auto flex flex-col md:flex-row justify-between items-center gap-10">
+          <p className={`text-sm tracking-wide font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'} font-['Outfit']`}>
+            Bringing visionary ideas to life through thoughtful design.
           </p>
-          <div className={`flex gap-8 text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-            <a href="#" className="hover:text-blue-500 transition-colors">Instagram</a>
-            <a href="#" className="hover:text-blue-500 transition-colors">Behance</a>
-            <a href="#" className="hover:text-blue-500 transition-colors">Dribbble</a>
-            <a href="#" className="hover:text-blue-500 transition-colors">Twitter</a>
+
+          <div className="flex gap-8 items-center">
+            {[
+              { icon: FaInstagram, href: '#', label: 'Instagram' },
+              { icon: FaTiktok, href: '#', label: 'TikTok' },
+              { icon: FaDiscord, href: '#', label: 'Discord' },
+              { icon: MdEmail, href: '#', label: 'Email' },
+            ].map((social) => (
+              <a 
+                key={social.label}
+                href={social.href} 
+                className={`transition-all duration-300 transform hover:scale-110 ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-zinc-900'}`}
+                aria-label={social.label}
+              >
+                <social.icon size={26} />
+              </a>
+            ))}
           </div>
+
         </div>
       </footer>
     </div>
   );
 }
+
 
 export default App;

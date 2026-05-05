@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 
 interface Category {
@@ -72,11 +72,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isDark, activeCategory, setActiveCate
         </nav>
 
         {/* Minimalist Separator shown in image */}
-        <div className={`mt-12 h-[1px] w-12 ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
+        <div className={`mt-12 h-[1.5px] w-24 ${isDark ? 'bg-zinc-800' : 'bg-zinc-300'}`} />
       </div>
 
       {/* Vertical separator adjusted for the new background boundary */}
-      <div className={`absolute right-0 top-10 bottom-10 w-[1px] ${isDark ? 'bg-white/5' : 'bg-zinc-200/50'}`} />
+      <div className={`absolute right-0 top-10 bottom-10 w-[2px] ${isDark ? 'bg-white/10' : 'bg-zinc-200'}`} />
     </aside>
   );
 };
