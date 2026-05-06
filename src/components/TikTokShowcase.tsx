@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { tiktokVideos } from '../data/tiktok';
 import type { TikTokVideo } from '../data/tiktok';
@@ -35,15 +35,20 @@ function TikTokCard({ video, isDark }: TikTokCardProps) {
 
   return (
     <motion.div
-      className={`relative flex-none w-[280px] h-[560px] md:w-[340px] md:h-[720px] rounded-2xl overflow-hidden shadow-2xl group cursor-pointer
+      className={`relative flex-none w-[280px] h-[560px] md:w-[340px] md:h-[720px] rounded-2xl overflow-hidden shadow-2xl cursor-pointer
         ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-zinc-100 border-zinc-200'} border`}
+      style={{
+        WebkitTapHighlightColor: 'transparent',
+        outline: 'none',
+      }}
     >
       <div className="w-full h-full">
         <iframe
           src={getTikTokPlayerSrc(video)}
-          className="w-full h-full border-0"
+          className="w-full h-full border-0 tiktok-iframe"
           allow="autoplay; encrypted-media"
           allowFullScreen
+          style={{ pointerEvents: 'auto' }}
         />
       </div>
     </motion.div>
@@ -70,6 +75,15 @@ export default function TikTokShowcase({ isDark }: { isDark: boolean }) {
 
   const scaleX = useTransform(scrollXProgress, [0, 1], [0.1, 1]);
 
+  // Toggle iframe pointer-events during drag
+  const setIframePointerEvents = useCallback((enabled: boolean) => {
+    if (!scrollRef.current) return;
+    const iframes = scrollRef.current.querySelectorAll('.tiktok-iframe');
+    iframes.forEach((iframe) => {
+      (iframe as HTMLElement).style.pointerEvents = enabled ? 'auto' : 'none';
+    });
+  }, []);
+
   useEffect(() => {
     return () => {
       if (momentumIdRef.current !== null) {
@@ -78,7 +92,7 @@ export default function TikTokShowcase({ isDark }: { isDark: boolean }) {
     };
   }, []);
 
-  const startMomentum = () => {
+  const startMomentum = useCallback(() => {
     if (!scrollRef.current) return;
     
     const friction = 0.95;
@@ -86,10 +100,9 @@ export default function TikTokShowcase({ isDark }: { isDark: boolean }) {
     
     const step = () => {
       if (!scrollRef.current || Math.abs(velocity) < 0.5) {
-        if (scrollRef.current) {
-          scrollRef.current.style.scrollSnapType = 'x mandatory';
-        }
         momentumIdRef.current = null;
+        // Re-enable iframe interaction when momentum stops
+        setIframePointerEvents(true);
         return;
       }
       
@@ -99,7 +112,7 @@ export default function TikTokShowcase({ isDark }: { isDark: boolean }) {
     };
     
     momentumIdRef.current = requestAnimationFrame(step);
-  };
+  }, [setIframePointerEvents]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (!scrollRef.current) return;
@@ -120,12 +133,10 @@ export default function TikTokShowcase({ isDark }: { isDark: boolean }) {
     lastTimeRef.current = Date.now();
     velocityRef.current = 0;
     
-    // Disable scroll snap during drag
-    scrollRef.current.style.scrollSnapType = 'none';
     scrollRef.current.style.cursor = 'grabbing';
     
-    // Set pointer capture to track movement even outside the container
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    // Capture pointer on the scroll container
+    scrollRef.current.setPointerCapture(e.pointerId);
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
@@ -137,14 +148,18 @@ export default function TikTokShowcase({ isDark }: { isDark: boolean }) {
     const dx = e.clientX - lastXRef.current;
     
     // Update velocity (pixels per frame-ish)
-    velocityRef.current = dx / dt * 16; // Normalize to ~60fps
+    velocityRef.current = (dx / dt) * 16; // Normalize to ~60fps
     
     lastXRef.current = e.clientX;
     lastTimeRef.current = now;
     
     // If user moved more than 5px, it's a drag, not a click
     if (Math.abs(deltaX) > 5) {
-      hasMovedRef.current = true;
+      if (!hasMovedRef.current) {
+        hasMovedRef.current = true;
+        // Disable iframe pointer events during drag
+        setIframePointerEvents(false);
+      }
     }
     
     if (hasMovedRef.current) {
@@ -159,14 +174,14 @@ export default function TikTokShowcase({ isDark }: { isDark: boolean }) {
     scrollRef.current.style.cursor = 'grab';
     
     // Release pointer capture
-    (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+    scrollRef.current.releasePointerCapture(e.pointerId);
     
     // Start momentum if user flicked
     if (hasMovedRef.current && Math.abs(velocityRef.current) > 2) {
       startMomentum();
     } else {
-      // Re-enable scroll snap immediately if no momentum
-      scrollRef.current.style.scrollSnapType = 'x mandatory';
+      // Re-enable iframes if no momentum is starting
+      setIframePointerEvents(true);
     }
   };
 
@@ -208,12 +223,13 @@ export default function TikTokShowcase({ isDark }: { isDark: boolean }) {
         {/* Carousel Container */}
         <div 
           ref={scrollRef}
-          className="flex gap-4 md:gap-8 overflow-x-auto pb-12 no-scrollbar snap-x cursor-grab"
+          className="flex gap-4 md:gap-8 overflow-x-auto pb-12 no-scrollbar cursor-grab"
           style={{ 
             scrollbarWidth: 'none', 
             msOverflowStyle: 'none',
-            scrollSnapType: 'x mandatory',
-            touchAction: 'pan-y pinch-zoom'
+            touchAction: 'pan-y pinch-zoom',
+            WebkitTapHighlightColor: 'transparent',
+            userSelect: 'none',
           }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
@@ -221,7 +237,7 @@ export default function TikTokShowcase({ isDark }: { isDark: boolean }) {
           onPointerCancel={handlePointerUp}
         >
           {tiktokVideos.map((video) => (
-            <div key={video.id} className="snap-center shrink-0">
+            <div key={video.id} className="shrink-0">
               <TikTokCard 
                 video={video} 
                 isDark={isDark} 
