@@ -52,7 +52,6 @@ export const projects: Project[] = [
     id: '5',
     title: 'Clay Soul',
     category: 'Character Art',
-    description: 'Character Art',
     description: 'Smooth clay bust with minimalist features.',
     image: '/images/image5.webp',
     date: 'May 2024',
