@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { tiktokVideos } from '../data/tiktok';
 import type { TikTokVideo } from '../data/tiktok';
@@ -32,9 +32,36 @@ function getTikTokPlayerSrc(video: TikTokVideo) {
 }
 
 function TikTokCard({ video, isDark }: TikTokCardProps) {
+  const [isInView, setIsInView] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          // We can keep observing if we want to unmount when off-screen, 
+          // but for iframes it's better to keep them once loaded to avoid reload jank.
+          observer.disconnect();
+        }
+      },
+      { 
+        // rootMargin '600px' ensures items start loading before the user actually sees them
+        rootMargin: '600px',
+        threshold: 0.01 
+      }
+    );
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <motion.div
+      ref={cardRef}
       className={`relative flex-none w-[280px] h-[560px] md:w-[340px] md:h-[720px] rounded-2xl overflow-hidden shadow-2xl cursor-pointer
         ${isDark ? 'bg-zinc-800 border-zinc-700' : 'bg-zinc-100 border-zinc-200'} border`}
       style={{
@@ -42,20 +69,37 @@ function TikTokCard({ video, isDark }: TikTokCardProps) {
         outline: 'none',
       }}
     >
-      <div className="w-full h-full">
-        <iframe
-          src={getTikTokPlayerSrc(video)}
-          className="w-full h-full border-0 tiktok-iframe"
-          allow="autoplay; encrypted-media"
-          allowFullScreen
-          style={{ pointerEvents: 'auto' }}
-        />
+      <div className="w-full h-full relative">
+        {isInView ? (
+          <iframe
+            src={getTikTokPlayerSrc(video)}
+            className="w-full h-full border-0 tiktok-iframe animate-fade-in"
+            allow={video.type === 'video' ? "autoplay; encrypted-media" : "encrypted-media"}
+            allowFullScreen
+            style={{ pointerEvents: 'auto' }}
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className={`w-12 h-12 rounded-full border-2 border-t-transparent ${isDark ? 'border-zinc-700' : 'border-zinc-300'} animate-spin opacity-20`} />
+          </div>
+        )}
       </div>
     </motion.div>
   );
 }
 
-export default function TikTokShowcase({ isDark }: { isDark: boolean }) {
+function SectionDivider({ label, isDark }: { label: string; isDark: boolean }) {
+  return (
+    <div className="flex items-center gap-4 mb-8">
+      <span className={`text-[10px] md:text-[11px] font-light uppercase tracking-[0.3em] whitespace-nowrap ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+        {label}
+      </span>
+      <div className={`flex-1 h-px ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'}`} />
+    </div>
+  );
+}
+
+function TikTokCarousel({ videos, isDark }: { videos: TikTokVideo[]; isDark: boolean }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { scrollXProgress } = useScroll({
     container: scrollRef,
@@ -186,9 +230,52 @@ export default function TikTokShowcase({ isDark }: { isDark: boolean }) {
   };
 
   return (
+    <div className="mb-20 last:mb-0">
+      {/* Custom Scroll Progress Indicator */}
+      <div className={`h-[1px] w-full ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'} mb-8 relative overflow-hidden`}>
+        <motion.div 
+          style={{ scaleX }}
+          className={`absolute top-0 left-0 bottom-0 w-full ${isDark ? 'bg-white' : 'bg-zinc-900'} origin-left`}
+        />
+      </div>
+
+      {/* Carousel Container */}
+      <div 
+        ref={scrollRef}
+        className="flex gap-4 md:gap-8 overflow-x-auto pb-8 no-scrollbar cursor-grab"
+        style={{ 
+          scrollbarWidth: 'none', 
+          msOverflowStyle: 'none',
+          touchAction: 'pan-y pinch-zoom',
+          WebkitTapHighlightColor: 'transparent',
+          userSelect: 'none',
+        }}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+      >
+        {videos.map((video) => (
+          <div key={video.id} className="shrink-0">
+            <TikTokCard 
+              video={video} 
+              isDark={isDark} 
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function TikTokShowcase({ isDark }: { isDark: boolean }) {
+  const videoPosts = tiktokVideos.filter(v => v.type === 'video').slice(0, 20);
+  const photoPosts = tiktokVideos.filter(v => v.type === 'photo').slice(0, 20);
+
+  return (
     <section className={`py-16 px-4 md:py-32 md:px-10 overflow-hidden ${isDark ? 'bg-zinc-900' : 'bg-white'}`}>
       <div className="max-w-[1800px] mx-auto">
-        <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-8 md:mb-16 gap-4 md:gap-0">
+        <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-16 md:mb-24 gap-4 md:gap-0">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -212,39 +299,21 @@ export default function TikTokShowcase({ isDark }: { isDark: boolean }) {
           </motion.div>
         </div>
 
-        {/* Custom Scroll Progress Indicator */}
-        <div className="h-[2px] w-full bg-zinc-800 mb-8 md:mb-12 relative overflow-hidden rounded-full">
-          <motion.div 
-            style={{ scaleX }}
-            className="absolute top-0 left-0 bottom-0 w-full bg-white origin-left"
-          />
-        </div>
+        {/* Video Section */}
+        {videoPosts.length > 0 && (
+          <>
+            <SectionDivider label="Videos" isDark={isDark} />
+            <TikTokCarousel videos={videoPosts} isDark={isDark} />
+          </>
+        )}
 
-        {/* Carousel Container */}
-        <div 
-          ref={scrollRef}
-          className="flex gap-4 md:gap-8 overflow-x-auto pb-12 no-scrollbar cursor-grab"
-          style={{ 
-            scrollbarWidth: 'none', 
-            msOverflowStyle: 'none',
-            touchAction: 'pan-y pinch-zoom',
-            WebkitTapHighlightColor: 'transparent',
-            userSelect: 'none',
-          }}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
-        >
-          {tiktokVideos.map((video) => (
-            <div key={video.id} className="shrink-0">
-              <TikTokCard 
-                video={video} 
-                isDark={isDark} 
-              />
-            </div>
-          ))}
-        </div>
+        {/* Photo Section */}
+        {photoPosts.length > 0 && (
+          <div className="mt-16 md:mt-32">
+            <SectionDivider label="Photos" isDark={isDark} />
+            <TikTokCarousel videos={photoPosts} isDark={isDark} />
+          </div>
+        )}
 
         <motion.p 
           initial={{ opacity: 0, y: 10 }}

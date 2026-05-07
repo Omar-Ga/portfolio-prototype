@@ -8,17 +8,19 @@ import penroseIcon from '../assets/penrose.png';
 interface NavbarProps {
   isDark: boolean;
   toggleTheme: () => void;
+  onNavigate: (page: 'home' | 'contact') => void;
+  currentPage: 'home' | 'contact';
 }
 
 const socialLinks = [
-  { icon: FaInstagram, href: '#', label: 'Instagram' },
-  { icon: FaTiktok, href: '#', label: 'TikTok' },
+  { icon: FaInstagram, href: 'https://www.instagram.com/the_volumetric_cube/', label: 'Instagram' },
+  { icon: FaTiktok, href: 'https://www.tiktok.com/the_volumetric_cube', label: 'TikTok' },
   { icon: FaDiscord, href: '#', label: 'Discord' },
-  { icon: MdEmail, href: '#', label: 'Email' },
+  { icon: MdEmail, href: 'mailto:Tylerdobson30@gmail.com', label: 'Email' },
 ];
 
 
-export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
+export default function Navbar({ isDark, toggleTheme, onNavigate, currentPage }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [phase, setPhase] = useState<'text' | 'gleam' | 'glitch-out' | 'icon' | 'glitch-in'>('text');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -109,6 +111,8 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
               <motion.a
                 key={social.label}
                 href={social.href}
+                target={social.label !== 'Email' ? "_blank" : undefined}
+                rel={social.label !== 'Email' ? "noopener noreferrer" : undefined}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + index * 0.1 }}
@@ -180,8 +184,18 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
 
             {/* Desktop Nav */}
             <div className={`hidden md:flex gap-8 text-[13px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${textColor} font-['Outfit']`}>
-              <a href="#" className="hover:opacity-50 transition-all hover:tracking-[0.3em]">Home</a>
-              <a href="#" className="hover:opacity-50 transition-all hover:tracking-[0.3em]">Contact</a>
+              <button 
+                onClick={() => onNavigate('home')} 
+                className={`transition-all hover:tracking-[0.3em] cursor-pointer ${currentPage === 'home' ? 'opacity-100' : 'opacity-50 hover:opacity-80'}`}
+              >
+                Home
+              </button>
+              <button 
+                onClick={() => onNavigate('contact')} 
+                className={`transition-all hover:tracking-[0.3em] cursor-pointer ${currentPage === 'contact' ? 'opacity-100' : 'opacity-50 hover:opacity-80'}`}
+              >
+                Contact
+              </button>
             </div>
 
 
@@ -225,26 +239,24 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
             </button>
 
             <div className={`flex flex-col items-center gap-10 font-['Outfit'] font-black uppercase tracking-[0.2em] text-2xl ${isDark ? 'text-white' : 'text-zinc-900'}`}>
-              <motion.a
+              <motion.button
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.1 }}
-                href="#"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="hover:opacity-50 transition-all hover:tracking-[0.3em]"
+                onClick={() => { onNavigate('home'); setIsMobileMenuOpen(false); }}
+                className={`hover:opacity-50 transition-all hover:tracking-[0.3em] cursor-pointer ${currentPage === 'home' ? 'opacity-100' : 'opacity-60'}`}
               >
                 Home
-              </motion.a>
-              <motion.a
+              </motion.button>
+              <motion.button
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                href="#"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="hover:opacity-50 transition-all hover:tracking-[0.3em]"
+                onClick={() => { onNavigate('contact'); setIsMobileMenuOpen(false); }}
+                className={`hover:opacity-50 transition-all hover:tracking-[0.3em] cursor-pointer ${currentPage === 'contact' ? 'opacity-100' : 'opacity-60'}`}
               >
                 Contact
-              </motion.a>
+              </motion.button>
 
               <motion.button
                 initial={{ y: 20, opacity: 0 }}
@@ -267,6 +279,8 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
                 <a
                   key={social.label}
                   href={social.href}
+                  target={social.label !== 'Email' ? "_blank" : undefined}
+                  rel={social.label !== 'Email' ? "noopener noreferrer" : undefined}
                   className={`transition-all duration-300 transform hover:-translate-y-1 ${isDark ? 'text-white/60 hover:text-white' : 'text-zinc-500 hover:text-zinc-900'}`}
                   aria-label={social.label}
                 >
