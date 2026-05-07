@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaInstagram, FaTiktok, FaDiscord } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 import { Menu, X } from 'lucide-react';
-import penroseIcon from '../assets/penrose.png';
+import penroseIcon from '../assets/penrose.webp';
 
 interface NavbarProps {
   isDark: boolean;

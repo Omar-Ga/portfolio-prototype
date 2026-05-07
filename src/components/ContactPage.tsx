@@ -1,7 +1,7 @@
 import { motion, type Variants } from 'framer-motion';
 import { FaInstagram, FaTiktok, FaDiscord } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
-import contactHero from '../assets/contact-hero.png';
+import contactHero from '../assets/contact-hero.webp';
 
 interface ContactPageProps {
   isDark: boolean;
