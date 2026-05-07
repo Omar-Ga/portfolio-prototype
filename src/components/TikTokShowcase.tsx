@@ -289,14 +289,17 @@ export default function TikTokShowcase({ isDark }: { isDark: boolean }) {
             </h3>
           </motion.div>
 
-          <motion.div 
+          <motion.a 
+            href="https://www.tiktok.com/@the_volumetric_cube"
+            target="_blank"
+            rel="noopener noreferrer"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            className="flex items-center gap-3 text-zinc-500 text-sm font-medium"
+            className="flex items-center gap-3 text-zinc-500 hover:text-zinc-400 transition-colors text-sm font-medium"
           >
             <FaTiktok />
             <span>@the_volumetric_cube</span>
-          </motion.div>
+          </motion.a>
         </div>
 
         {/* Video Section */}

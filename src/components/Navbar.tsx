@@ -14,7 +14,7 @@ interface NavbarProps {
 
 const socialLinks = [
   { icon: FaInstagram, href: 'https://www.instagram.com/the_volumetric_cube/', label: 'Instagram' },
-  { icon: FaTiktok, href: 'https://www.tiktok.com/the_volumetric_cube', label: 'TikTok' },
+  { icon: FaTiktok, href: 'https://www.tiktok.com/@the_volumetric_cube', label: 'TikTok' },
   { icon: FaDiscord, href: '#', label: 'Discord' },
   { icon: MdEmail, href: 'mailto:Tylerdobson30@gmail.com', label: 'Email' },
 ];
