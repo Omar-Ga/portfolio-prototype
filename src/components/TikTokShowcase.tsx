@@ -1,7 +1,6 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { tiktokVideos } from '../data/tiktok';
-import type { TikTokVideo } from '../data/tiktok';
+import type { TikTokItem as TikTokVideo } from '../App';
 import { FaTiktok } from 'react-icons/fa';
 
 interface TikTokCardProps {
@@ -268,9 +267,7 @@ function TikTokCarousel({ videos, isDark }: { videos: TikTokVideo[]; isDark: boo
   );
 }
 
-export default function TikTokShowcase({ isDark }: { isDark: boolean }) {
-  const videoPosts = tiktokVideos.filter(v => v.type === 'video').slice(0, 20);
-  const photoPosts = tiktokVideos.filter(v => v.type === 'photo').slice(0, 20);
+export default function TikTokShowcase({ isDark, videoPosts = [], photoPosts = [] }: { isDark: boolean, videoPosts?: TikTokVideo[], photoPosts?: TikTokVideo[] }) {
 
   return (
     <section className={`py-16 px-4 md:py-32 md:px-10 overflow-hidden ${isDark ? 'bg-zinc-900' : 'bg-white'}`}>

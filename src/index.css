@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600&display=swap');
 
 @variant dark (&:where(.dark, .dark *));
 
@@ -49,6 +50,14 @@
   .animate-fade-in {
     animation: fade-in 0.7s ease-out forwards;
   }
+
+  .animate-marquee {
+    animation: marquee var(--duration, 40s) linear infinite;
+  }
+
+  .animate-aurora {
+    animation: aurora-pulse 10s ease-in-out infinite alternate;
+  }
 }
 
 @keyframes fade-in {
@@ -59,6 +68,17 @@
 @keyframes gleam-sweep {
   0%   { background-position: 150% center; }
   100% { background-position: -50% center; }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes aurora-pulse {
+  0% { opacity: 0.3; transform: scale(1) translate(0, 0); }
+  50% { opacity: 0.5; transform: scale(1.1) translate(2%, 5%); }
+  100% { opacity: 0.3; transform: scale(1) translate(-2%, -5%); }
 }
 
 @keyframes glitch-anim {

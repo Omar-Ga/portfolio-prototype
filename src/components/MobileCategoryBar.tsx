@@ -1,40 +1,28 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-interface Category {
-  id: string;
-  name: string;
-}
-
-const categories: Category[] = [
-  { id: 'all', name: 'All Works' },
-  { id: '3d', name: '3D Design' },
-  { id: 'motion', name: 'Motion Graphics' },
-  { id: 'vfx', name: 'Visual Effects' },
-  { id: 'photography', name: 'Photography' },
-  { id: 'web', name: 'Web Experiences' },
-  { id: 'branding', name: 'Branding' },
-  { id: 'ui', name: 'UI/UX Design' },
-];
 
 interface MobileCategoryBarProps {
   isDark: boolean;
   activeCategory: string;
   setActiveCategory: (category: string) => void;
+  categories: { _id: string, title: string }[];
 }
 
-const MobileCategoryBar: React.FC<MobileCategoryBarProps> = ({ isDark, activeCategory, setActiveCategory }) => {
+const MobileCategoryBar: React.FC<MobileCategoryBarProps> = ({ isDark, activeCategory, setActiveCategory, categories }) => {
+  const allCategories = [{ _id: 'all', title: 'All Works' }, ...categories];
+
   return (
     <div className={`lg:hidden sticky top-[60px] md:top-[90px] z-40 backdrop-blur-xl border-b -mx-4 px-4 py-3 mb-6 transition-colors duration-500 ${
       isDark ? 'bg-zinc-900/80 border-white/10' : 'bg-white/80 border-gray-200'
     }`}>
       <div className="flex gap-2 overflow-x-auto no-scrollbar snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-        {categories.map((category) => {
-          const isActive = activeCategory === category.id;
+        {allCategories.map((category) => {
+          const isActive = activeCategory === (category._id === 'all' ? 'all' : category.title);
           return (
             <button
-              key={category.id}
-              onClick={() => setActiveCategory(category.id)}
+              key={category._id}
+              onClick={() => setActiveCategory(category._id === 'all' ? 'all' : category.title)}
               className={`relative px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap snap-center transition-colors duration-300 ${
                 isActive 
                   ? (isDark ? 'text-white' : 'text-zinc-900')
@@ -48,7 +36,7 @@ const MobileCategoryBar: React.FC<MobileCategoryBarProps> = ({ isDark, activeCat
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />
               )}
-              {category.name}
+              {category.title}
             </button>
           );
         })}

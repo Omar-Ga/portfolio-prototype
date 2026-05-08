@@ -12,12 +12,12 @@ const ShowcaseView: React.FC<Props> = ({ projects, onProjectClick }) => {
     <div className="flex flex-col gap-8 md:gap-12 max-w-5xl mx-auto py-6 px-4 md:py-12 md:px-6">
       {projects.map((project, index) => (
         <motion.div
-          key={project.id}
+          key={project._id}
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: index * 0.1 }}
-          layoutId={`project-${project.id}`}
+          layoutId={`project-${project._id}`}
           onClick={() => onProjectClick(project)}
           className="group relative overflow-hidden rounded-2xl md:rounded-3xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/5 cursor-pointer"
         >

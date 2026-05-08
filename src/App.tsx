@@ -1,23 +1,91 @@
 import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import ServicesMarquee from './components/ServicesMarquee';
 import Sidebar from './components/Sidebar';
 import MobileCategoryBar from './components/MobileCategoryBar';
 import ShowcaseView from './components/ShowcaseView';
 import GalleryView from './components/GalleryView';
-import { projects, type Project } from './data/projects';
+import { type Project } from './data/projects';
 import { AnimatePresence, motion } from 'framer-motion';
 import ProjectModal from './components/ProjectModal';
 import TikTokShowcase from './components/TikTokShowcase';
 import ContactPage from './components/ContactPage';
 import { FaInstagram, FaTiktok, FaDiscord } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
+import { client } from './sanityClient';
+
+export interface TikTokItem {
+  id: string;
+  title: string;
+  type: 'video' | 'photo';
+}
+
+function extractTikTokId(url: string): string | null {
+  const match = url.match(/(?:video|photo)\/(\d+)/);
+  return match ? match[1] : null;
+}
 
 function App() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState<'home' | 'contact'>('home');
   const [isDark, setIsDark] = useState(true);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [categories, setCategories] = useState<{ _id: string, title: string }[]>([]);
+  const [tiktokVideos, setTiktokVideos] = useState<TikTokItem[]>([]);
+  const [tiktokPhotos, setTiktokPhotos] = useState<TikTokItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [projectsData, categoriesData, rawTiktokVideos, rawTiktokPhotos] = await Promise.all([
+          client.fetch(`*[_type == "project"]{
+            _id,
+            title,
+            description,
+            date,
+            "category": category->title,
+            "image": image.asset->url
+          }`),
+          client.fetch(`*[_type == "category"]{
+            _id,
+            "title": title
+          }`),
+          client.fetch(`*[_type == "tiktokVideo"]{ _id, title, url }`),
+          client.fetch(`*[_type == "tiktokImage"]{ _id, title, url }`)
+        ]);
+        setProjects(projectsData);
+        setCategories(categoriesData);
+
+        const mappedVideos = rawTiktokVideos
+          .map((v: any) => ({
+            id: extractTikTokId(v.url),
+            title: v.title,
+            type: 'video' as const
+          }))
+          .filter((v: any) => v.id);
+
+        const mappedPhotos = rawTiktokPhotos
+          .map((p: any) => ({
+            id: extractTikTokId(p.url),
+            title: p.title,
+            type: 'photo' as const
+          }))
+          .filter((p: any) => p.id);
+
+        setTiktokVideos(mappedVideos);
+        setTiktokPhotos(mappedPhotos);
+      } catch (error) {
+        console.error('Error fetching data from Sanity:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     if (isDark) {
@@ -49,11 +117,13 @@ function App() {
           >
             <div className="flex flex-col">
               <Hero />
-              <div id="projects-section" className="flex pt-20 md:pt-32 px-4 md:px-10">
+              <ServicesMarquee />
+            <div id="projects-section" className="flex pt-20 md:pt-32 px-4 md:px-10">
                 <Sidebar 
                   isDark={isDark} 
                   activeCategory={activeCategory} 
                   setActiveCategory={setActiveCategory} 
+                  categories={categories}
                 />
                 
                 <main className="flex-grow pl-0 lg:pl-20 pb-10 md:pb-20 w-full min-w-0">
@@ -61,20 +131,37 @@ function App() {
                     isDark={isDark}
                     activeCategory={activeCategory}
                     setActiveCategory={setActiveCategory}
+                    categories={categories}
                   />
 
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={activeCategory === 'all' ? 'gallery' : 'showcase'}
-                      initial={{ opacity: 0, x: activeCategory !== 'all' ? -20 : 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: activeCategory !== 'all' ? 20 : -20 }}
-                      transition={{ duration: 0.4, ease: "easeInOut" }}
-                    >
-                      {activeCategory !== 'all' && <ShowcaseView projects={projects} onProjectClick={setSelectedProject} />}
-                      {activeCategory === 'all' && <GalleryView projects={projects} onProjectClick={setSelectedProject} />}
-                    </motion.div>
-                  </AnimatePresence>
+                  {isLoading ? (
+                    <div className="flex items-center justify-center py-40">
+                      <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  ) : (
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={activeCategory === 'all' ? 'gallery' : 'showcase'}
+                        initial={{ opacity: 0, x: activeCategory !== 'all' ? -20 : 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: activeCategory !== 'all' ? 20 : -20 }}
+                        transition={{ duration: 0.4, ease: "easeInOut" }}
+                      >
+                        {activeCategory !== 'all' && (
+                          <ShowcaseView 
+                            projects={projects.filter(p => p.category === activeCategory)} 
+                            onProjectClick={setSelectedProject} 
+                          />
+                        )}
+                        {activeCategory === 'all' && (
+                          <GalleryView 
+                            projects={projects} 
+                            onProjectClick={setSelectedProject} 
+                          />
+                        )}
+                      </motion.div>
+                    </AnimatePresence>
+                  )}
 
                   <AnimatePresence>
                     {selectedProject && (
@@ -87,7 +174,7 @@ function App() {
                 </main>
               </div>
 
-              <TikTokShowcase isDark={isDark} />
+              <TikTokShowcase isDark={isDark} videoPosts={tiktokVideos} photoPosts={tiktokPhotos} />
             </div>
 
             <footer className={`border-t py-8 px-5 md:py-12 md:px-10 ${isDark ? 'border-white/10' : 'border-gray-200'}`}>

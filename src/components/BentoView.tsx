@@ -12,7 +12,7 @@ const BentoView: React.FC<Props> = ({ projects, onProjectClick }) => {
     <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[160px] md:auto-rows-[220px] gap-3 md:gap-4 py-6 md:py-12 px-4 md:px-6 max-w-7xl mx-auto">
       {projects.map((project, index) => (
         <motion.div
-          key={project.id}
+          key={project._id}
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
@@ -20,7 +20,7 @@ const BentoView: React.FC<Props> = ({ projects, onProjectClick }) => {
           style={{
             gridColumn: `span ${Math.min(project.colSpan || 1, 2)}`,
           }}
-          layoutId={`project-${project.id}`}
+          layoutId={`project-${project._id}`}
           onClick={() => onProjectClick(project)}
           className="group relative overflow-hidden rounded-2xl md:rounded-3xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300"
         >

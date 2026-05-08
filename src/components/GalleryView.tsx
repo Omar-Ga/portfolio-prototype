@@ -12,12 +12,12 @@ const GalleryView: React.FC<Props> = ({ projects, onProjectClick }) => {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 py-6 md:py-12 px-4 md:px-6 max-w-7xl mx-auto">
       {projects.map((project, index) => (
         <motion.div
-          key={project.id}
+          key={project._id}
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4, delay: index * 0.05 }}
-          layoutId={`project-${project.id}`}
+          layoutId={`project-${project._id}`}
           onClick={() => onProjectClick(project)}
           className="group relative aspect-square overflow-hidden rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 cursor-pointer"
         >

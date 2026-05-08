@@ -1,29 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-interface Category {
-  id: string;
-  name: string;
-}
-
-const categories: Category[] = [
-  { id: 'all', name: 'All Works' },
-  { id: '3d', name: '3D Design' },
-  { id: 'motion', name: 'Motion Graphics' },
-  { id: 'vfx', name: 'Visual Effects' },
-  { id: 'photography', name: 'Photography' },
-  { id: 'web', name: 'Web Experiences' },
-  { id: 'branding', name: 'Branding' },
-  { id: 'ui', name: 'UI/UX Design' },
-];
 
 interface SidebarProps {
   isDark: boolean;
   activeCategory: string;
   setActiveCategory: (category: string) => void;
+  categories: { _id: string, title: string }[];
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isDark, activeCategory, setActiveCategory }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isDark, activeCategory, setActiveCategory, categories }) => {
+  const allCategories = [{ _id: 'all', title: 'All Works' }, ...categories];
 
   return (
     <aside className={`hidden lg:flex flex-col w-72 h-[calc(100vh-100px)] sticky top-24 ml-4 p-8 rounded-[2rem] transition-colors duration-500 ${
@@ -35,13 +22,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isDark, activeCategory, setActiveCate
         </h2>
         
         <nav className="flex flex-col gap-y-6">
-          {categories.map((category) => {
-            const isActive = activeCategory === category.id;
+          {allCategories.map((category) => {
+            const isActive = activeCategory === (category._id === 'all' ? 'all' : category.title);
             
             return (
               <button
-                key={category.id}
-                onClick={() => setActiveCategory(category.id)}
+                key={category._id}
+                onClick={() => setActiveCategory(category._id === 'all' ? 'all' : category.title)}
                 className="group relative flex items-center text-left outline-none"
               >
                 {/* Minimal Active Indicator Line */}
@@ -56,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isDark, activeCategory, setActiveCate
                     ? isDark ? 'text-white translate-x-1' : 'text-zinc-950 translate-x-1'
                     : isDark ? 'text-zinc-500 hover:text-zinc-300' : 'text-zinc-400 hover:text-zinc-800'
                 }`}>
-                  {category.name}
+                  {category.title}
                 </span>
 
                 {isActive && (
