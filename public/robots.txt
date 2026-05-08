@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Block non-public directories
+Disallow: /assets/
+Disallow: /hero-videos/
+
+# Sitemap
+Sitemap: https://alexander-robertson-art.com/sitemap.xml

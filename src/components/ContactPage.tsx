@@ -42,7 +42,7 @@ export default function ContactPage({ isDark }: ContactPageProps) {
       >
         <motion.img 
           src={contactHero} 
-          alt="Contact Hero" 
+          alt="Alex Robertson graphic design workspace and creative artwork" 
           className="w-full h-full object-cover"
           animate={{ 
             scale: [1, 1.05, 1],

@@ -2,13 +2,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState, useRef } from 'react';
 import { client } from '../sanityClient';
 
+interface HeroProps {
+  onContactClick?: () => void;
+}
+
 interface VideoReel {
   videos: {
     url: string;
   }[];
 }
 
-export default function Hero() {
+export default function Hero({ onContactClick }: HeroProps) {
   const [videos, setVideos] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -59,7 +63,7 @@ export default function Hero() {
   const currentVideoSrc = videos.length > 0 ? videos[currentIndex] : null;
 
   return (
-    <section className="relative w-full h-screen bg-black overflow-hidden flex flex-col justify-center shrink-0">
+    <section aria-label="Hero introduction" className="relative w-full h-screen bg-black overflow-hidden flex flex-col justify-center shrink-0">
       {/* Video Background Container */}
       <div className="absolute top-0 right-0 w-full md:w-[65%] h-full z-0">
         <AnimatePresence initial={false}>
@@ -111,7 +115,10 @@ export default function Hero() {
             >
               My Services
             </button>
-            <button className="px-6 py-3 md:px-8 md:py-4 bg-transparent border border-white text-white font-semibold rounded-full hover:bg-white/10 transition-colors">
+            <button 
+              onClick={onContactClick}
+              className="px-6 py-3 md:px-8 md:py-4 bg-transparent border border-white text-white font-semibold rounded-full hover:bg-white/10 transition-colors"
+            >
               Contact Me
             </button>
           </div>

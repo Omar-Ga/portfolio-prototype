@@ -144,7 +144,7 @@ function App() {
             transition={{ duration: 0.5 }}
           >
             <div className="flex flex-col">
-              <Hero />
+              <Hero onContactClick={() => setCurrentPage('contact')} />
 
             <div id="projects-section" className="flex pt-20 md:pt-32 px-4 md:px-10">
                 <Sidebar 
