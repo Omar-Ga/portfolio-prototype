@@ -100,6 +100,9 @@ function SectionDivider({ label, isDark }: { label: string; isDark: boolean }) {
 
 function TikTokCarousel({ videos, isDark }: { videos: TikTokVideo[]; isDark: boolean }) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [scrollMetrics, setScrollMetrics] = useState({ scrollLeft: 0, scrollWidth: 1, clientWidth: 1 });
+  const [isThumbActive, setIsThumbActive] = useState(false);
   const { scrollXProgress } = useScroll({
     container: scrollRef,
   });
@@ -117,6 +120,31 @@ function TikTokCarousel({ videos, isDark }: { videos: TikTokVideo[]; isDark: boo
   const momentumIdRef = useRef<number | null>(null);
 
   const scaleX = useTransform(scrollXProgress, [0, 1], [0.1, 1]);
+
+  const updateMetrics = useCallback(() => {
+    if (scrollRef.current) {
+      setScrollMetrics({
+        scrollLeft: scrollRef.current.scrollLeft,
+        scrollWidth: scrollRef.current.scrollWidth,
+        clientWidth: scrollRef.current.clientWidth,
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    updateMetrics();
+    const currentScrollRef = scrollRef.current;
+    if (currentScrollRef) {
+      currentScrollRef.addEventListener('scroll', updateMetrics, { passive: true });
+    }
+    window.addEventListener('resize', updateMetrics);
+    return () => {
+      if (currentScrollRef) {
+        currentScrollRef.removeEventListener('scroll', updateMetrics);
+      }
+      window.removeEventListener('resize', updateMetrics);
+    };
+  }, [updateMetrics]);
 
   // Toggle iframe pointer-events during drag
   const setIframePointerEvents = useCallback((enabled: boolean) => {
@@ -228,9 +256,37 @@ function TikTokCarousel({ videos, isDark }: { videos: TikTokVideo[]; isDark: boo
     }
   };
 
+  const thumbWidthPercent = (scrollMetrics.clientWidth / scrollMetrics.scrollWidth) * 100;
+  const maxScrollLeft = scrollMetrics.scrollWidth - scrollMetrics.clientWidth;
+  const scrollProgress = maxScrollLeft > 0 ? scrollMetrics.scrollLeft / maxScrollLeft : 0;
+  const thumbLeftPercent = scrollProgress * (100 - thumbWidthPercent);
+
+  const handleThumbPointerDown = (e: React.PointerEvent) => {
+    setIsThumbActive(true);
+    const startX = e.clientX;
+    const startScrollLeft = scrollMetrics.scrollLeft;
+
+    const handlePointerMove = (moveEvent: PointerEvent) => {
+      if (!scrollRef.current || !trackRef.current) return;
+      const deltaX = moveEvent.clientX - startX;
+      const trackWidth = trackRef.current.clientWidth;
+      const scrollRatio = scrollMetrics.scrollWidth / trackWidth;
+      scrollRef.current.scrollLeft = startScrollLeft + deltaX * scrollRatio;
+    };
+
+    const handlePointerUp = () => {
+      setIsThumbActive(false);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+  };
+
   return (
     <div className="mb-20 last:mb-0">
-      {/* Custom Scroll Progress Indicator */}
+      {/* Custom Scroll Progress Indicator (Top) */}
       <div className={`h-[1px] w-full ${isDark ? 'bg-zinc-800' : 'bg-zinc-200'} mb-8 relative overflow-hidden`}>
         <motion.div 
           style={{ scaleX }}
@@ -241,7 +297,7 @@ function TikTokCarousel({ videos, isDark }: { videos: TikTokVideo[]; isDark: boo
       {/* Carousel Container */}
       <div 
         ref={scrollRef}
-        className="flex gap-4 md:gap-8 overflow-x-auto pb-8 no-scrollbar cursor-grab"
+        className="flex gap-4 md:gap-8 overflow-x-auto pb-6 no-scrollbar cursor-grab"
         style={{ 
           scrollbarWidth: 'none', 
           msOverflowStyle: 'none',
@@ -263,6 +319,51 @@ function TikTokCarousel({ videos, isDark }: { videos: TikTokVideo[]; isDark: boo
           </div>
         ))}
       </div>
+
+      {/* Custom Draggable Scrollbar (Bottom) */}
+      {scrollMetrics.scrollWidth > scrollMetrics.clientWidth && (
+        <div 
+          ref={trackRef}
+          className={`mt-6 h-2 w-full relative ${isDark ? 'bg-zinc-800/50' : 'bg-zinc-200/50'} cursor-pointer overflow-hidden`}
+          onClick={(e) => {
+            if (!scrollRef.current || !trackRef.current) return;
+            const rect = trackRef.current.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const trackWidth = trackRef.current.clientWidth;
+            const thumbWidth = (scrollMetrics.clientWidth / scrollMetrics.scrollWidth) * trackWidth;
+            const clickProgress = (clickX - thumbWidth / 2) / (trackWidth - thumbWidth);
+            scrollRef.current.scrollTo({
+              left: clickProgress * (scrollMetrics.scrollWidth - scrollMetrics.clientWidth),
+              behavior: 'smooth'
+            });
+          }}
+        >
+          <motion.div
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              handleThumbPointerDown(e);
+            }}
+            animate={{
+              backgroundColor: isThumbActive ? '#3b82f6' : (isDark ? '#3f3f46' : '#d4d4d8'),
+              boxShadow: isThumbActive ? '0 0 15px rgba(59, 130, 246, 0.6)' : 'none',
+            }}
+            transition={{ 
+              backgroundColor: { duration: 0.3 },
+              boxShadow: { duration: 0.3 }
+            }}
+            style={{
+              width: `${thumbWidthPercent}%`,
+              left: `${thumbLeftPercent}%`,
+              position: 'absolute',
+              height: '100%',
+              cursor: 'grab',
+            }}
+            whileHover={{
+              backgroundColor: isThumbActive ? '#3b82f6' : (isDark ? '#52525b' : '#a1a1aa')
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

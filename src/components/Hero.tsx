@@ -1,6 +1,18 @@
 import { motion } from 'framer-motion';
+import { useEffect, useState, useRef } from 'react';
+import { client } from '../sanityClient';
+
+interface VideoReel {
+  videos: {
+    url: string;
+  }[];
+}
 
 export default function Hero() {
+  const [videos, setVideos] = useState<string[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
   const scrollToProjects = () => {
     const element = document.getElementById('projects-section');
     if (element) {
@@ -8,18 +20,60 @@ export default function Hero() {
     }
   };
 
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const query = `*[_type == "heroVideoReel"][0]{
+          videos[]{
+            "url": videoFile.asset->url
+          }
+        }`;
+        const data = await client.fetch<VideoReel>(query);
+        
+        if (data && data.videos && data.videos.length > 0) {
+          const videoUrls = data.videos.map(v => v.url);
+          setVideos(videoUrls);
+        }
+      } catch (error) {
+        console.error('Error fetching hero videos:', error);
+      }
+    };
+
+    fetchVideos();
+  }, []);
+
+  const handleVideoEnd = () => {
+    if (videos.length > 1) {
+      setCurrentIndex((prev) => (prev + 1) % videos.length);
+    }
+  };
+
+  // Ensure video plays when source changes
+  useEffect(() => {
+    if (videoRef.current && videos.length > 0) {
+      videoRef.current.load();
+      videoRef.current.play().catch(err => console.log("Auto-play prevented:", err));
+    }
+  }, [currentIndex, videos]);
+
+  const currentVideoSrc = videos.length > 0 
+    ? videos[currentIndex] 
+    : "/hero-videos/TestRender30001-0120.webm";
+
   return (
     <section className="relative w-full h-screen bg-black overflow-hidden flex flex-col justify-center shrink-0">
       {/* Video Background Container */}
       <div className="absolute top-0 right-0 w-full md:w-[65%] h-full z-0">
         <video 
+          ref={videoRef}
           autoPlay 
-          loop 
           muted 
           playsInline
+          onEnded={handleVideoEnd}
           className="w-full h-full object-cover"
+          key={currentVideoSrc} // Key change forces re-mount of video element for cleaner src swap
         >
-          <source src="/hero-videos/TestRender30001-0120.webm" type="video/webm" />
+          <source src={currentVideoSrc} type={currentVideoSrc.endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
         </video>
       </div>
 

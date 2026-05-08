@@ -29,7 +29,19 @@ function extractTikTokId(url: string): string | null {
 function App() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState<'home' | 'contact'>('home');
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) return savedTheme === 'dark';
+      
+      try {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      } catch (e) {
+        return true; // Fallback to dark
+      }
+    }
+    return true; // Fallback to dark
+  });
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [categories, setCategories] = useState<{ _id: string, title: string }[]>([]);
@@ -95,7 +107,23 @@ function App() {
     }
   }, [isDark]);
 
-  const toggleTheme = () => setIsDark(!isDark);
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      if (!localStorage.getItem('theme')) {
+        setIsDark(e.matches);
+      }
+    };
+    
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  const toggleTheme = () => {
+    const newIsDark = !isDark;
+    setIsDark(newIsDark);
+    localStorage.setItem('theme', newIsDark ? 'dark' : 'light');
+  };
 
   return (
     <div className={`${currentPage === 'contact' ? 'h-screen overflow-hidden' : 'min-h-screen'} font-sans transition-colors duration-500 ${isDark ? 'bg-zinc-900 text-zinc-50' : 'bg-white text-zinc-900'}`}>
@@ -187,7 +215,7 @@ function App() {
                   {[
                     { icon: FaInstagram, href: 'https://www.instagram.com/the_volumetric_cube/', label: 'Instagram' },
                     { icon: FaTiktok, href: 'https://www.tiktok.com/@the_volumetric_cube', label: 'TikTok' },
-                    { icon: FaDiscord, href: '#', label: 'Discord' },
+                    { icon: FaDiscord, href: 'https://discord.com/users/471385139117817881', label: 'Discord' },
                     { icon: MdEmail, href: 'mailto:Tylerdobson30@gmail.com', label: 'Email' },
                   ].map((social) => (
                     <a 

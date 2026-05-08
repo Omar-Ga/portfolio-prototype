@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, Settings2 } from 'lucide-react';
 import type { Project } from '../data/projects';
@@ -12,6 +12,16 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [navStyle, setNavStyle] = useState<'pill' | 'separated'>('pill');
+  
+  useEffect(() => {
+    // Disable scrolling on mount
+    document.body.style.overflow = 'hidden';
+    
+    // Re-enable scrolling on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
   
   // Replicate the image to mock a carousel
   const images = Array(4).fill(project.image);

@@ -10,7 +10,7 @@ interface ContactPageProps {
 const socialLinks = [
   { icon: FaInstagram, href: 'https://www.instagram.com/the_volumetric_cube/', label: 'Instagram' },
   { icon: FaTiktok, href: 'https://www.tiktok.com/@the_volumetric_cube', label: 'TikTok' },
-  { icon: FaDiscord, href: '#', label: 'Discord' },
+  { icon: FaDiscord, href: 'https://discord.com/users/471385139117817881', label: 'Discord' },
   { icon: MdEmail, href: 'mailto:Tylerdobson30@gmail.com', label: 'Email' },
 ];
 
@@ -86,8 +86,7 @@ export default function ContactPage({ isDark }: ContactPageProps) {
               </label>
               <input 
                 type="text" 
-                placeholder="Alex Robertson"
-                className={`w-full bg-transparent border-b py-3 focus:outline-none transition-all font-['Outfit'] placeholder:opacity-20
+                className={`w-full bg-transparent border-b py-3 focus:outline-none transition-all font-['Outfit']
                   ${isDark ? 'border-zinc-800 focus:border-white text-white' : 'border-zinc-200 focus:border-zinc-900 text-zinc-900'}`}
               />
             </motion.div>
@@ -98,8 +97,7 @@ export default function ContactPage({ isDark }: ContactPageProps) {
               </label>
               <input 
                 type="email" 
-                placeholder="alex@example.com"
-                className={`w-full bg-transparent border-b py-3 focus:outline-none transition-all font-['Outfit'] placeholder:opacity-20
+                className={`w-full bg-transparent border-b py-3 focus:outline-none transition-all font-['Outfit']
                   ${isDark ? 'border-zinc-800 focus:border-white text-white' : 'border-zinc-200 focus:border-zinc-900 text-zinc-900'}`}
               />
             </motion.div>
@@ -110,8 +108,7 @@ export default function ContactPage({ isDark }: ContactPageProps) {
               </label>
               <input 
                 type="text" 
-                placeholder="Brand Identity Redesign"
-                className={`w-full bg-transparent border-b py-3 focus:outline-none transition-all font-['Outfit'] placeholder:opacity-20
+                className={`w-full bg-transparent border-b py-3 focus:outline-none transition-all font-['Outfit']
                   ${isDark ? 'border-zinc-800 focus:border-white text-white' : 'border-zinc-200 focus:border-zinc-900 text-zinc-900'}`}
               />
             </motion.div>
@@ -122,8 +119,7 @@ export default function ContactPage({ isDark }: ContactPageProps) {
               </label>
               <textarea 
                 rows={4}
-                placeholder="Describe your vision..."
-                className={`w-full bg-transparent border-b py-3 focus:outline-none transition-all font-['Outfit'] placeholder:opacity-20 resize-none
+                className={`w-full bg-transparent border-b py-3 focus:outline-none transition-all font-['Outfit'] resize-none
                   ${isDark ? 'border-zinc-800 focus:border-white text-white' : 'border-zinc-200 focus:border-zinc-900 text-zinc-900'}`}
               />
             </motion.div>
