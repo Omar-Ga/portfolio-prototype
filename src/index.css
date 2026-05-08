@@ -51,13 +51,7 @@
     animation: fade-in 0.7s ease-out forwards;
   }
 
-  .animate-marquee {
-    animation: marquee var(--duration, 40s) linear infinite;
-  }
 
-  .animate-aurora {
-    animation: aurora-pulse 10s ease-in-out infinite alternate;
-  }
 }
 
 @keyframes fade-in {
@@ -70,16 +64,9 @@
   100% { background-position: -50% center; }
 }
 
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
 
-@keyframes aurora-pulse {
-  0% { opacity: 0.3; transform: scale(1) translate(0, 0); }
-  50% { opacity: 0.5; transform: scale(1.1) translate(2%, 5%); }
-  100% { opacity: 0.3; transform: scale(1) translate(-2%, -5%); }
-}
+
+
 
 @keyframes glitch-anim {
   0% { transform: translate(0); opacity: 1; filter: drop-shadow(0 0 0 rgba(255,0,0,0)); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }

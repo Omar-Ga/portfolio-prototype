@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import ServicesMarquee from './components/ServicesMarquee';
+
 import Sidebar from './components/Sidebar';
 import MobileCategoryBar from './components/MobileCategoryBar';
 import ShowcaseView from './components/ShowcaseView';
@@ -145,7 +145,7 @@ function App() {
           >
             <div className="flex flex-col">
               <Hero />
-              <ServicesMarquee />
+
             <div id="projects-section" className="flex pt-20 md:pt-32 px-4 md:px-10">
                 <Sidebar 
                   isDark={isDark} 

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState, useRef } from 'react';
 import { client } from '../sanityClient';
 
@@ -56,25 +56,31 @@ export default function Hero() {
     }
   }, [currentIndex, videos]);
 
-  const currentVideoSrc = videos.length > 0 
-    ? videos[currentIndex] 
-    : "/hero-videos/TestRender30001-0120.webm";
+  const currentVideoSrc = videos.length > 0 ? videos[currentIndex] : null;
 
   return (
     <section className="relative w-full h-screen bg-black overflow-hidden flex flex-col justify-center shrink-0">
       {/* Video Background Container */}
       <div className="absolute top-0 right-0 w-full md:w-[65%] h-full z-0">
-        <video 
-          ref={videoRef}
-          autoPlay 
-          muted 
-          playsInline
-          onEnded={handleVideoEnd}
-          className="w-full h-full object-cover"
-          key={currentVideoSrc} // Key change forces re-mount of video element for cleaner src swap
-        >
-          <source src={currentVideoSrc} type={currentVideoSrc.endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
-        </video>
+        <AnimatePresence initial={false}>
+          {currentVideoSrc && (
+            <motion.video 
+              ref={videoRef}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.2, ease: "easeInOut" }}
+              autoPlay 
+              muted 
+              playsInline
+              onEnded={handleVideoEnd}
+              className="absolute top-0 left-0 w-full h-full object-cover"
+              key={currentVideoSrc}
+            >
+              <source src={currentVideoSrc} type={currentVideoSrc.endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
+            </motion.video>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Gradient Overlay - Specifically tuned stops to mask the sharp video edge */}
