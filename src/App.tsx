@@ -147,7 +147,7 @@ function App() {
             <div className="flex flex-col">
               <Hero onContactClick={() => setCurrentPage('contact')} />
 
-            <div id="projects-section" className="flex pt-20 md:pt-32 px-4 md:px-10">
+              <div id="projects-section" className="flex pt-20 md:pt-32 px-4 md:px-10">
                 <Sidebar 
                   isDark={isDark} 
                   activeCategory={activeCategory} 
@@ -156,6 +156,8 @@ function App() {
                 />
                 
                 <main className="flex-grow pl-0 lg:pl-20 pb-10 md:pb-20 w-full min-w-0">
+
+
                   <MobileCategoryBar 
                     isDark={isDark}
                     activeCategory={activeCategory}

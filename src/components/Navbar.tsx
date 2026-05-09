@@ -140,7 +140,7 @@ export default function Navbar({ isDark, toggleTheme, onNavigate, currentPage }:
           `}
           style={clipStyle}
         >
-          Alex Robertson
+          Alexander Robertson
         </h1>
       </div>
     );

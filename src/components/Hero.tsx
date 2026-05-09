@@ -102,7 +102,7 @@ export default function Hero({ onContactClick }: HeroProps) {
             Hello There!
           </p>
           <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight mb-4 md:mb-6">
-            I'm Alex Robertson
+            I'm Alexander Robertson
           </h1>
           <p className="text-sm md:text-lg lg:text-xl text-zinc-300 mb-8 md:mb-10 leading-relaxed font-light">
             A passionate graphic designer specializing in immersive 3D landscapes, sleek brand identities, and futuristic visual experiences. Turning bold concepts into striking digital realities.

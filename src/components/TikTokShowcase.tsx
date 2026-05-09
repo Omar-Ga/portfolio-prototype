@@ -75,7 +75,7 @@ function TikTokCard({ video, isDark }: TikTokCardProps) {
             className="w-full h-full border-0 tiktok-iframe animate-fade-in"
             allow={video.type === 'video' ? "autoplay; encrypted-media" : "encrypted-media"}
             allowFullScreen
-            title={`TikTok ${video.type} by Alex Robertson${video.title ? ` — ${video.title}` : ''}`}
+            title={`TikTok ${video.type} by Alexander Robertson${video.title ? ` — ${video.title}` : ''}`}
             style={{ pointerEvents: 'auto' }}
           />
         ) : (

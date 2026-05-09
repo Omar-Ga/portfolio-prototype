@@ -18,7 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isDark, activeCategory, setActiveCate
     }`}>
       <div className="flex flex-col h-full">
         <h2 className={`text-[10px] font-bold tracking-[0.3em] uppercase mb-10 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-          Collection
+          Projects
         </h2>
         
         <nav className="flex flex-col gap-y-6">

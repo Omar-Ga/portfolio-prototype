@@ -13,7 +13,7 @@ const MobileCategoryBar: React.FC<MobileCategoryBarProps> = ({ isDark, activeCat
   const allCategories = [{ _id: 'all', title: 'All Works' }, ...categories];
 
   return (
-    <div className={`lg:hidden sticky top-[60px] md:top-[90px] z-40 backdrop-blur-xl border-b -mx-4 px-4 py-3 mb-6 transition-colors duration-500 ${
+    <div className={`lg:hidden sticky top-[60px] md:top-[90px] z-40 backdrop-blur-xl border-b -mx-4 px-4 py-3 mb-2 transition-colors duration-500 ${
       isDark ? 'bg-zinc-900/80 border-white/10' : 'bg-white/80 border-gray-200'
     }`}>
       <div className="flex gap-2 overflow-x-auto no-scrollbar snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
