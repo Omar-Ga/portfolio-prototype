@@ -27,15 +27,15 @@ export default function Hero({ onContactClick }: HeroProps) {
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const query = `*[_type == "heroVideoReel"][0]{
+        const query = `*[_type == "heroVideoReel"]{
           videos[]{
             "url": videoFile.asset->url
           }
         }`;
-        const data = await client.fetch<VideoReel>(query);
+        const data = await client.fetch<VideoReel[]>(query);
         
-        if (data && data.videos && data.videos.length > 0) {
-          const videoUrls = data.videos.map(v => v.url);
+        if (data && data.length > 0) {
+          const videoUrls = data.flatMap(doc => doc.videos ? doc.videos.map(v => v.url) : []);
           setVideos(videoUrls);
         }
       } catch (error) {
@@ -63,7 +63,7 @@ export default function Hero({ onContactClick }: HeroProps) {
   const currentVideoSrc = videos.length > 0 ? videos[currentIndex] : null;
 
   return (
-    <section aria-label="Hero introduction" className="relative w-full h-screen bg-black overflow-hidden flex flex-col justify-center shrink-0">
+    <section aria-label="Hero introduction" className="relative w-full min-h-screen bg-black overflow-hidden flex flex-col justify-center shrink-0">
       {/* Video Background Container */}
       <div className="absolute top-0 right-0 w-full md:w-[65%] h-full z-0">
         <AnimatePresence initial={false}>

@@ -78,7 +78,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
       
       <motion.div
         layoutId={`project-${project._id}`}
-        className="relative w-full h-full md:max-w-3xl md:aspect-square bg-zinc-900 rounded-none md:rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col"
+        className="relative w-full h-full md:max-w-3xl md:max-h-[90vh] md:aspect-square bg-zinc-900 rounded-none md:rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col"
       >
         <button 
           onClick={() => setNavStyle(prev => prev === 'pill' ? 'separated' : 'pill')}

@@ -263,9 +263,13 @@ function TikTokCarousel({ videos, isDark }: { videos: TikTokVideo[]; isDark: boo
   const thumbLeftPercent = scrollProgress * (100 - thumbWidthPercent);
 
   const handleThumbPointerDown = (e: React.PointerEvent) => {
+    e.preventDefault(); // Prevent text selection and default drag behaviors
     setIsThumbActive(true);
     const startX = e.clientX;
     const startScrollLeft = scrollMetrics.scrollLeft;
+
+    // Fallback: disable selection on the entire body while dragging
+    document.body.style.userSelect = 'none';
 
     const handlePointerMove = (moveEvent: PointerEvent) => {
       if (!scrollRef.current || !trackRef.current) return;
@@ -277,6 +281,7 @@ function TikTokCarousel({ videos, isDark }: { videos: TikTokVideo[]; isDark: boo
 
     const handlePointerUp = () => {
       setIsThumbActive(false);
+      document.body.style.userSelect = '';
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
     };
@@ -311,8 +316,8 @@ function TikTokCarousel({ videos, isDark }: { videos: TikTokVideo[]; isDark: boo
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
       >
-        {videos.map((video) => (
-          <div key={video.id} className="shrink-0">
+        {videos.map((video, index) => (
+          <div key={`${video.id}-${index}`} className="shrink-0">
             <TikTokCard 
               video={video} 
               isDark={isDark} 

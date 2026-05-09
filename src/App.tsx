@@ -73,7 +73,7 @@ function App() {
 
         const mappedVideos = rawTiktokVideos
           .map((v: any) => ({
-            id: extractTikTokId(v.url),
+            id: extractTikTokId(v.url) || v._id,
             title: v.title,
             type: 'video' as const
           }))
@@ -81,7 +81,7 @@ function App() {
 
         const mappedPhotos = rawTiktokPhotos
           .map((p: any) => ({
-            id: extractTikTokId(p.url),
+            id: extractTikTokId(p.url) || p._id,
             title: p.title,
             type: 'photo' as const
           }))
@@ -126,7 +126,7 @@ function App() {
   };
 
   return (
-    <div className={`${currentPage === 'contact' ? 'h-screen overflow-hidden' : 'min-h-screen'} font-sans transition-colors duration-500 ${isDark ? 'bg-zinc-900 text-zinc-50' : 'bg-white text-zinc-900'}`}>
+    <div className={`${currentPage === 'contact' ? 'min-h-screen' : 'min-h-screen'} font-sans transition-colors duration-500 ${isDark ? 'bg-zinc-900 text-zinc-50' : 'bg-white text-zinc-900'}`}>
       <Navbar 
         isDark={isDark} 
         toggleTheme={toggleTheme} 

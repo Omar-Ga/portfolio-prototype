@@ -32,13 +32,13 @@ export default function ContactPage({ isDark }: ContactPageProps) {
   };
 
   return (
-    <div className={`h-screen flex flex-col md:flex-row overflow-hidden ${isDark ? 'bg-zinc-900 text-white' : 'bg-white text-zinc-900'}`}>
+    <div className={`min-h-screen flex flex-col md:flex-row ${isDark ? 'text-white' : 'text-zinc-900'} ${isDark ? 'md:bg-zinc-900' : 'md:bg-white'}`}>
       {/* Left Side: Imagery */}
       <motion.div 
         initial={{ opacity: 0, scale: 1.1 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
-        className="hidden md:block w-1/2 h-screen relative overflow-hidden"
+        className="w-full md:w-1/2 h-[50vh] md:h-screen sticky top-0 overflow-hidden z-0"
       >
         <motion.img 
           src={contactHero} 
@@ -56,10 +56,13 @@ export default function ContactPage({ isDark }: ContactPageProps) {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent" />
         <div className={`absolute inset-0 backdrop-blur-[2px] pointer-events-none ${isDark ? 'mix-blend-overlay opacity-30' : 'mix-blend-multiply opacity-10'}`} />
+        
+        {/* Mobile Reveal Gradient Overlay */}
+        <div className={`absolute inset-0 md:hidden bg-gradient-to-t via-transparent to-transparent pointer-events-none ${isDark ? 'from-zinc-900' : 'from-white'}`} />
       </motion.div>
 
       {/* Right Side: Contact Form */}
-      <div className="w-full md:w-1/2 h-screen flex flex-col justify-center px-8 md:px-16 lg:px-24 pt-24 md:pt-32 pb-10 relative overflow-hidden">
+      <div className={`w-full md:w-1/2 min-h-screen flex flex-col justify-center px-8 md:px-16 lg:px-24 pt-16 md:pt-32 pb-10 relative z-10 ${isDark ? 'bg-zinc-900' : 'bg-white'}`}>
         <motion.div
           variants={containerVariants}
           initial="hidden"
