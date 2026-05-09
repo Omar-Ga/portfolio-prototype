@@ -59,7 +59,8 @@ function App() {
             description,
             date,
             "category": category->title,
-            "image": image.asset->url
+            "image": image.asset->url,
+            "gallery": gallery[].asset->url
           }`),
           client.fetch(`*[_type == "category"]{
             _id,

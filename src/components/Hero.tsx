@@ -65,7 +65,7 @@ export default function Hero({ onContactClick }: HeroProps) {
   return (
     <section aria-label="Hero introduction" className="relative w-full min-h-screen bg-black overflow-hidden flex flex-col justify-center shrink-0">
       {/* Video Background Container */}
-      <div className="absolute top-0 right-0 w-full md:w-[65%] h-full z-0">
+      <div className="absolute top-0 right-0 w-full md:w-[85%] h-full z-0">
         <AnimatePresence initial={false}>
           {currentVideoSrc && (
             <motion.video 
@@ -88,7 +88,7 @@ export default function Hero({ onContactClick }: HeroProps) {
       </div>
 
       {/* Gradient Overlay - Specifically tuned stops to mask the sharp video edge */}
-      <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-t md:bg-gradient-to-r from-black md:from-black md:from-[35%] via-black/90 md:via-black/70 via-[25%] md:via-[50%] to-transparent md:to-transparent to-[45%] md:to-[80%]" />
+      <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-t md:bg-gradient-to-r from-black md:from-black md:from-[20%] via-black/60 md:via-black/50 via-[30%] md:via-[45%] to-transparent md:to-transparent to-[60%] md:to-[85%]" />
 
       {/* Hero Content */}
       <div className="relative z-20 px-6 md:px-16 lg:px-24 w-full flex flex-col justify-end pb-24 md:justify-center md:pb-0 h-full">

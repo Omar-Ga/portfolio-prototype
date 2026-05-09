@@ -23,8 +23,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
     };
   }, []);
   
-  // Replicate the image to mock a carousel
-  const images = Array(4).fill(project.image);
+  // Always include the preview image first, followed by any gallery images. 
+  // We use Set to deduplicate in case the preview image is also in the gallery.
+  const images = Array.from(new Set([project.image, ...(project.gallery || [])])).filter(Boolean);
 
   const handleDragEnd = (_: any, info: any) => {
     const offset = info.offset.x;

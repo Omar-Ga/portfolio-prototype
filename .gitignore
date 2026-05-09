@@ -25,3 +25,15 @@ dist-ssr
 
 # Sanity
 .sanity
+
+# Binaries and temp files
+cloudflared.exe
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!tsconfig.*.json
+!sanity.cli.ts
+!sanity.config.ts
+scratch/
+

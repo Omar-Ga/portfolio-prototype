@@ -4,6 +4,7 @@ export interface Project {
   category: string;
   description: string;
   image: string;
+  gallery?: string[];
   date: string;
   colSpan?: number;
 }
