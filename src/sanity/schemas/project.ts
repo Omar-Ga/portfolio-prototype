@@ -30,6 +30,15 @@ export default defineType({
       },
     }),
     defineField({
+      name: 'previewVideo',
+      title: 'Preview Video',
+      type: 'file',
+      options: {
+        accept: 'video/mp4,video/webm',
+      },
+      description: 'Upload an mp4/webm video that plays on hover in the project list.',
+    }),
+    defineField({
       name: 'gallery',
       title: 'Gallery Images',
       type: 'array',

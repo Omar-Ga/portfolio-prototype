@@ -6,6 +6,7 @@ export interface Project {
   image: string;
   gallery?: string[];
   date: string;
+  previewVideo?: string;
   colSpan?: number;
 }
 

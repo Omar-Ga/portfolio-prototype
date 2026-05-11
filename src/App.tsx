@@ -60,7 +60,8 @@ function App() {
             date,
             "category": category->title,
             "image": image.asset->url,
-            "gallery": gallery[].asset->url
+            "gallery": gallery[].asset->url,
+            "previewVideo": previewVideo.asset->url
           }`),
           client.fetch(`*[_type == "category"]{
             _id,
