@@ -23,9 +23,12 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
     };
   }, []);
   
-  // Always include the preview image first, followed by any gallery images. 
-  // We use Set to deduplicate in case the preview image is also in the gallery.
-  const images = Array.from(new Set([project.image, ...(project.gallery || [])])).filter(Boolean);
+  // Always include the preview video first if it exists, followed by the preview image, then gallery images.
+  const media = Array.from(new Set([
+    project.previewVideo,
+    project.image,
+    ...(project.gallery || [])
+  ])).filter(Boolean);
 
   const handleDragEnd = (_: any, info: any) => {
     const offset = info.offset.x;
@@ -39,7 +42,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
   };
 
   const paginate = (newDirection: number) => {
-    if (newDirection === 1 && currentIndex < images.length - 1) {
+    if (newDirection === 1 && currentIndex < media.length - 1) {
       setDirection(1);
       setCurrentIndex((prev) => prev + 1);
     } else if (newDirection === -1 && currentIndex > 0) {
@@ -97,25 +100,50 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
 
         <div className="relative w-full h-full overflow-hidden bg-zinc-950">
           <AnimatePresence initial={false} custom={direction}>
-            <motion.img
-              key={currentIndex}
-              src={images[currentIndex]}
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{
-                x: { type: "spring", stiffness: 300, damping: 30 },
-                opacity: { duration: 0.2 }
-              }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={1}
-              onDragEnd={handleDragEnd}
-              alt={`${project.title} - ${currentIndex + 1}`}
-              className="absolute inset-0 w-full h-full object-cover cursor-grab active:cursor-grabbing"
-            />
+            {media[currentIndex]?.endsWith('.mp4') || media[currentIndex]?.endsWith('.webm') ? (
+              <motion.video
+                key={currentIndex}
+                src={media[currentIndex]}
+                custom={direction}
+                variants={variants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{
+                  x: { type: "spring", stiffness: 300, damping: 30 },
+                  opacity: { duration: 0.2 }
+                }}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={1}
+                onDragEnd={handleDragEnd}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover cursor-grab active:cursor-grabbing"
+              />
+            ) : (
+              <motion.img
+                key={currentIndex}
+                src={media[currentIndex]}
+                custom={direction}
+                variants={variants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{
+                  x: { type: "spring", stiffness: 300, damping: 30 },
+                  opacity: { duration: 0.2 }
+                }}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={1}
+                onDragEnd={handleDragEnd}
+                alt={`${project.title} - ${currentIndex + 1}`}
+                className="absolute inset-0 w-full h-full object-cover cursor-grab active:cursor-grabbing"
+              />
+            )}
           </AnimatePresence>
 
           {/* Gradient Overlay for better UI contrast */}
@@ -140,7 +168,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
               </button>
 
               <div className="flex gap-2 px-1">
-                {images.map((_, i) => (
+                {media.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => {
@@ -163,9 +191,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
 
               <button
                 onClick={() => paginate(1)}
-                disabled={currentIndex === images.length - 1}
+                disabled={currentIndex === media.length - 1}
                 className={`p-2 rounded-full transition-all ${
-                  currentIndex === images.length - 1 ? 'opacity-20 cursor-default' : 'text-white hover:bg-white/10 active:scale-90'
+                  currentIndex === media.length - 1 ? 'opacity-20 cursor-default' : 'text-white hover:bg-white/10 active:scale-90'
                 }`}
               >
                 <ChevronRight size={18} />
@@ -186,9 +214,9 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
                 </button>
                 <button
                   onClick={() => paginate(1)}
-                  disabled={currentIndex === images.length - 1}
+                  disabled={currentIndex === media.length - 1}
                   className={`p-4 md:p-3 rounded-full bg-black/40 hover:bg-black/70 backdrop-blur-md text-white transition-all pointer-events-auto border border-white/10 ${
-                    currentIndex === images.length - 1 ? 'opacity-0 scale-90 cursor-default' : 'opacity-100 scale-100 hover:scale-110 active:scale-95'
+                    currentIndex === media.length - 1 ? 'opacity-0 scale-90 cursor-default' : 'opacity-100 scale-100 hover:scale-110 active:scale-95'
                   }`}
                 >
                   <ChevronRight size={20} />
@@ -197,7 +225,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
 
               {/* Vertical Oval Indicator */}
               <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center gap-3.5 bg-black/40 backdrop-blur-xl rounded-full py-5 px-3 shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/10 z-20 pointer-events-auto">
-                {images.map((_, i) => (
+                {media.map((_, i) => (
                   <button 
                     key={i}
                     onClick={() => {
