@@ -5,11 +5,12 @@ import type { Project } from '../data/projects';
 interface Props {
   projects: Project[];
   onProjectClick: (project: Project) => void;
+  isSidebarCollapsed?: boolean;
 }
 
-const GalleryView: React.FC<Props> = ({ projects, onProjectClick }) => {
+const GalleryView: React.FC<Props> = ({ projects, onProjectClick, isSidebarCollapsed = false }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 py-6 md:py-12 px-4 md:px-6 max-w-7xl mx-auto">
+    <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 py-6 md:py-12 mx-auto transition-all duration-500 ease-in-out ${isSidebarCollapsed ? 'gap-2 md:gap-3 px-2 md:px-4 max-w-full w-full' : 'gap-4 md:gap-6 px-4 md:px-6 max-w-7xl'}`}>
       {projects.map((project, index) => (
         <motion.div
           key={project._id}
@@ -51,8 +52,17 @@ const GalleryView: React.FC<Props> = ({ projects, onProjectClick }) => {
           )}
           
           <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-md p-3 md:p-4 translate-y-0 md:translate-y-[100%] md:group-hover:translate-y-0 [@media(hover:none)]:translate-y-0 transition-transform duration-300 ease-out z-20 flex justify-between items-center">
-            <span className="text-white font-bold text-sm truncate mr-2">{project.title}</span>
-            <span className="text-white/70 text-[10px] font-medium whitespace-nowrap">{project.date}</span>
+            <div className="flex flex-col overflow-hidden mr-2">
+              <span className="text-white font-bold text-sm truncate">{project.title}</span>
+              <span className="text-white/70 text-[10px] font-medium whitespace-nowrap">{project.date}</span>
+            </div>
+            
+            {/* Minimal View Link */}
+            <div className="transition-transform duration-300 md:translate-y-2 md:group-hover:translate-y-0 md:opacity-0 md:group-hover:opacity-100 flex-shrink-0">
+              <span className="text-xs font-semibold text-white/90 bg-white/20 hover:bg-white/30 backdrop-blur-sm px-3 py-1.5 rounded-full transition-colors flex items-center gap-1">
+                View
+              </span>
+            </div>
           </div>
         </motion.div>
       ))}

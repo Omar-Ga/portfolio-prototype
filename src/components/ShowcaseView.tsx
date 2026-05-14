@@ -5,11 +5,12 @@ import type { Project } from '../data/projects';
 interface Props {
   projects: Project[];
   onProjectClick: (project: Project) => void;
+  isSidebarCollapsed?: boolean;
 }
 
-const ShowcaseView: React.FC<Props> = ({ projects, onProjectClick }) => {
+const ShowcaseView: React.FC<Props> = ({ projects, onProjectClick, isSidebarCollapsed = false }) => {
   return (
-    <div className="flex flex-col gap-8 md:gap-12 max-w-5xl mx-auto py-6 px-4 md:py-12 md:px-6">
+    <div className={`flex flex-col py-6 px-4 md:py-12 md:px-6 mx-auto transition-all duration-500 ease-in-out ${isSidebarCollapsed ? 'gap-2 md:gap-3 max-w-full w-full' : 'gap-8 md:gap-12 max-w-5xl'}`}>
       {projects.map((project, index) => (
         <motion.div
           key={project._id}
@@ -57,7 +58,7 @@ const ShowcaseView: React.FC<Props> = ({ projects, onProjectClick }) => {
             </div>
             
             {/* View Project Button - Positioned above the hover overlay */}
-            <div className="absolute bottom-16 right-4 md:bottom-20 md:right-8 z-30">
+            <div className="absolute bottom-16 right-4 md:bottom-20 md:right-8 z-30 transition-transform duration-300 group-hover:-translate-y-2">
               <button className="px-4 py-2 md:px-6 md:py-3 rounded-full bg-black dark:bg-white text-white dark:text-black font-semibold text-xs md:text-sm transition-all hover:bg-gray-800 dark:hover:bg-gray-200 active:scale-95 shadow-xl">
                 View Project
               </button>

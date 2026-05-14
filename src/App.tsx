@@ -48,6 +48,7 @@ function App() {
   const [tiktokVideos, setTiktokVideos] = useState<TikTokItem[]>([]);
   const [tiktokPhotos, setTiktokPhotos] = useState<TikTokItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -154,9 +155,11 @@ function App() {
                   activeCategory={activeCategory} 
                   setActiveCategory={setActiveCategory} 
                   categories={categories}
+                  isCollapsed={isSidebarCollapsed}
+                  setIsCollapsed={setIsSidebarCollapsed}
                 />
                 
-                <main className="flex-grow pl-0 lg:pl-20 pb-10 md:pb-20 w-full min-w-0">
+                <main className={`flex-grow transition-all duration-500 pb-10 md:pb-20 w-full min-w-0 ${isSidebarCollapsed ? 'lg:pl-8' : 'lg:pl-20 pl-0'}`}>
 
 
                   <MobileCategoryBar 
@@ -182,13 +185,15 @@ function App() {
                         {activeCategory !== 'all' && (
                           <ShowcaseView 
                             projects={projects.filter(p => p.category === activeCategory)} 
-                            onProjectClick={setSelectedProject} 
+                            onProjectClick={setSelectedProject}
+                            isSidebarCollapsed={isSidebarCollapsed}
                           />
                         )}
                         {activeCategory === 'all' && (
                           <GalleryView 
                             projects={projects} 
-                            onProjectClick={setSelectedProject} 
+                            onProjectClick={setSelectedProject}
+                            isSidebarCollapsed={isSidebarCollapsed}
                           />
                         )}
                       </motion.div>

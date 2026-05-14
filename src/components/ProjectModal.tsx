@@ -17,11 +17,20 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
     // Disable scrolling on mount
     document.body.style.overflow = 'hidden';
     
-    // Re-enable scrolling on unmount
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    
+    // Re-enable scrolling and remove listener on unmount
     return () => {
       document.body.style.overflow = 'unset';
+      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [onClose]);
   
   // Always include the preview video first if it exists, followed by the preview image, then gallery images.
   const media = Array.from(new Set([

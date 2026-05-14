@@ -39,13 +39,10 @@ function TikTokCard({ video, isDark }: TikTokCardProps) {
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsInView(true);
-          // We can keep observing if we want to unmount when off-screen, 
-          // but for iframes it's better to keep them once loaded to avoid reload jank.
           observer.disconnect();
         }
       },
       { 
-        // rootMargin '600px' ensures items start loading before the user actually sees them
         rootMargin: '600px',
         threshold: 0.01 
       }
@@ -57,6 +54,26 @@ function TikTokCard({ video, isDark }: TikTokCardProps) {
 
     return () => observer.disconnect();
   }, []);
+
+  // Prevent TikTok iframe from hijacking media keys
+  useEffect(() => {
+    if (isInView && 'mediaSession' in navigator) {
+      const dummyAction = () => {};
+      try {
+        navigator.mediaSession.setActionHandler('play', dummyAction);
+        navigator.mediaSession.setActionHandler('pause', dummyAction);
+      } catch (e) {
+        // Ignore errors if action handlers are not supported
+      }
+      
+      return () => {
+        try {
+          navigator.mediaSession.setActionHandler('play', null);
+          navigator.mediaSession.setActionHandler('pause', null);
+        } catch (e) {}
+      };
+    }
+  }, [isInView]);
 
   return (
     <motion.div
