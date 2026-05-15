@@ -10,7 +10,7 @@ interface Props {
 
 const GalleryView: React.FC<Props> = ({ projects, onProjectClick, isSidebarCollapsed = false }) => {
   return (
-    <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 py-6 md:py-12 mx-auto transition-all duration-500 ease-in-out ${isSidebarCollapsed ? 'gap-2 md:gap-3 px-2 md:px-4 max-w-full w-full' : 'gap-4 md:gap-6 px-4 md:px-6 max-w-7xl'}`}>
+    <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ${isSidebarCollapsed ? 'xl:grid-cols-4 2xl:grid-cols-5' : ''} py-6 md:py-12 mx-auto transition-all duration-500 ease-in-out ${isSidebarCollapsed ? 'gap-2 md:gap-3 px-2 md:px-4 max-w-[1800px] w-full' : 'gap-4 md:gap-6 px-4 md:px-6 max-w-7xl'}`}>
       {projects.map((project, index) => (
         <motion.div
           key={project._id}

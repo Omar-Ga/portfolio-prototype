@@ -10,7 +10,7 @@ interface Props {
 
 const ShowcaseView: React.FC<Props> = ({ projects, onProjectClick, isSidebarCollapsed = false }) => {
   return (
-    <div className={`flex flex-col py-6 px-4 md:py-12 md:px-6 mx-auto transition-all duration-500 ease-in-out ${isSidebarCollapsed ? 'gap-2 md:gap-3 max-w-full w-full' : 'gap-8 md:gap-12 max-w-5xl'}`}>
+    <div className={`flex flex-col py-6 px-4 md:py-12 md:px-6 mx-auto transition-all duration-500 ease-in-out ${isSidebarCollapsed ? 'gap-10 md:gap-16 max-w-[1600px] w-full' : 'gap-8 md:gap-12 max-w-7xl'}`}>
       {projects.map((project, index) => (
         <motion.div
           key={project._id}
@@ -33,7 +33,7 @@ const ShowcaseView: React.FC<Props> = ({ projects, onProjectClick, isSidebarColl
           }}
           className="group relative overflow-hidden rounded-2xl md:rounded-3xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-white/5 cursor-pointer"
         >
-          <div className="aspect-[16/9] w-full overflow-hidden relative">
+          <div className={`w-full overflow-hidden relative ${isSidebarCollapsed ? 'aspect-[16/9] max-h-[85vh]' : 'aspect-[16/9]'}`}>
             {project.previewVideo ? (
               <video
                 src={project.previewVideo}
