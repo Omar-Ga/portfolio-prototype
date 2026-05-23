@@ -38,22 +38,44 @@ export default defineType({
       },
       description: 'Upload an mp4/webm video that plays on hover in the project list.',
     }),
+    // Mixed media: images and videos for the project carousel (project-local)
     defineField({
-      name: 'gallery',
-      title: 'Gallery Images',
+      name: 'media',
+      title: 'Media (Images & Videos)',
       type: 'array',
       of: [
         defineArrayMember({
           type: 'image',
+          title: 'Image',
           options: { hotspot: true },
         }),
+        defineArrayMember({
+          type: 'file',
+          title: 'Video',
+          options: { accept: 'video/mp4,video/webm' },
+        }),
       ],
-      description: 'Additional images for the project carousel.',
+      description: 'Add images and/or video clips to appear in the project carousel. Preview video remains a separate hover-only field.',
     }),
     defineField({
       name: 'date',
       title: 'Date (e.g., Jan 2024)',
       type: 'string',
+    }),
+    defineField({
+      name: 'aspectRatio',
+      title: 'Aspect Ratio',
+      type: 'string',
+      options: {
+        list: [
+          { title: '16:9 (Landscape / Widescreen)', value: '16:9' },
+          { title: '9:16 (Portrait / Vertical)', value: '9:16' },
+        ],
+        layout: 'radio',
+      },
+      validation: (Rule) => Rule.required(),
+      initialValue: '16:9',
+      description: 'Controls layout grouping and modal aspect ratio.',
     }),
   ],
 });

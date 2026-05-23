@@ -32,12 +32,41 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
     };
   }, [onClose]);
   
-  // Always include the preview video first if it exists, followed by the preview image, then gallery images.
-  const media = Array.from(new Set([
-    project.previewVideo,
-    project.image,
-    ...(project.gallery || [])
-  ])).filter(Boolean);
+  // Build ordered media list:
+  // 1) previewVideo (always first when present)
+  // 2) all other videos from `project.media`
+  // 3) all other images from `project.media`, plus `project.image` as fallback
+  const media = (() => {
+    const urls: string[] = [];
+
+    // 1) preview video first
+    if (project.previewVideo) urls.push(project.previewVideo);
+
+    // helper to detect video by known extensions as a fallback
+    const isVideoUrl = (u?: string) => !!u && (u.endsWith('.mp4') || u.endsWith('.webm'));
+
+    // 2) other videos from new mixed media collection
+    if (project.media && project.media.length > 0) {
+      const videos = project.media
+        .filter((m) => m && (m.type === 'video' || isVideoUrl(m.url)))
+        .map((m) => m.url)
+        .filter(Boolean);
+      urls.push(...videos);
+
+      // 3) images from mixed media
+      const images = project.media
+        .filter((m) => m && (m.type === 'image' || !isVideoUrl(m.url)))
+        .map((m) => m.url)
+        .filter(Boolean);
+      urls.push(...images);
+    } else {
+      // Fallback for older projects: use image only
+      if (project.image) urls.push(project.image);
+    }
+
+    // Deduplicate while preserving order
+    return Array.from(new Set(urls));
+  })();
 
   const handleDragEnd = (_: any, info: any) => {
     const offset = info.offset.x;
@@ -91,7 +120,11 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
       
       <motion.div
         layoutId={`project-${project._id}`}
-        className="relative w-full h-full md:max-w-3xl md:max-h-[90vh] md:aspect-square bg-zinc-900 rounded-none md:rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col"
+        className={`relative w-full h-full ${
+          project.aspectRatio === '9:16'
+            ? 'md:w-auto md:h-[90vh] md:aspect-[9/16]'
+            : 'md:w-[90vw] md:h-auto md:max-w-5xl md:aspect-[16/9]'
+        } bg-zinc-900 rounded-none md:rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col`}
       >
         <button 
           onClick={() => setNavStyle(prev => prev === 'pill' ? 'separated' : 'pill')}

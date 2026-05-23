@@ -6,6 +6,7 @@ import { FaTiktok } from 'react-icons/fa';
 interface TikTokCardProps {
   video: TikTokVideo;
   isDark: boolean;
+  isActive?: boolean;
 }
 
 function getTikTokPlayerSrc(video: TikTokVideo) {
@@ -25,12 +26,14 @@ function getTikTokPlayerSrc(video: TikTokVideo) {
     params.delete('progress_bar');
     params.delete('timestamp');
     params.delete('closed_caption');
+    params.set('muted', '1');
+    params.set('volume', '0');
   }
 
   return `https://www.tiktok.com/player/v1/${video.id}?${params.toString()}`;
 }
 
-function TikTokCard({ video, isDark }: TikTokCardProps) {
+function TikTokCard({ video, isDark, isActive = false }: TikTokCardProps) {
   const [isInView, setIsInView] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -75,6 +78,8 @@ function TikTokCard({ video, isDark }: TikTokCardProps) {
     }
   }, [isInView]);
 
+  const shouldRenderIframe = video.type === 'photo' ? isActive : isInView;
+
   return (
     <motion.div
       ref={cardRef}
@@ -86,7 +91,7 @@ function TikTokCard({ video, isDark }: TikTokCardProps) {
       }}
     >
       <div className="w-full h-full relative">
-        {isInView ? (
+        {shouldRenderIframe ? (
           <iframe
             src={getTikTokPlayerSrc(video)}
             className="w-full h-full border-0 tiktok-iframe animate-fade-in"
@@ -121,6 +126,7 @@ function TikTokCarousel({ videos, isDark }: { videos: TikTokVideo[]; isDark: boo
   const trackRef = useRef<HTMLDivElement>(null);
   const [scrollMetrics, setScrollMetrics] = useState({ scrollLeft: 0, scrollWidth: 1, clientWidth: 1 });
   const [isThumbActive, setIsThumbActive] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
   const { scrollXProgress } = useScroll({
     container: scrollRef,
   });
@@ -140,13 +146,28 @@ function TikTokCarousel({ videos, isDark }: { videos: TikTokVideo[]; isDark: boo
   const scaleX = useTransform(scrollXProgress, [0, 1], [0.1, 1]);
 
   const updateMetrics = useCallback(() => {
-    if (scrollRef.current) {
-      setScrollMetrics({
-        scrollLeft: scrollRef.current.scrollLeft,
-        scrollWidth: scrollRef.current.scrollWidth,
-        clientWidth: scrollRef.current.clientWidth,
-      });
-    }
+    if (!scrollRef.current) return;
+
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    setScrollMetrics({ scrollLeft, scrollWidth, clientWidth });
+
+    const children = Array.from(scrollRef.current.children) as HTMLElement[];
+    if (!children.length) return;
+
+    const centerX = scrollLeft + clientWidth / 2;
+    let closestIndex = 0;
+    let closestDistance = Number.POSITIVE_INFINITY;
+
+    children.forEach((child, index) => {
+      const childCenter = child.offsetLeft + child.clientWidth / 2;
+      const distance = Math.abs(centerX - childCenter);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    });
+
+    setActiveIndex((prev) => (prev === closestIndex ? prev : closestIndex));
   }, []);
 
   useEffect(() => {
@@ -338,6 +359,7 @@ function TikTokCarousel({ videos, isDark }: { videos: TikTokVideo[]; isDark: boo
             <TikTokCard 
               video={video} 
               isDark={isDark} 
+              isActive={activeIndex === index}
             />
           </div>
         ))}
