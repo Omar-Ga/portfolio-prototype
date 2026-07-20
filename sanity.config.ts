@@ -16,13 +16,13 @@ export default defineConfig({
     // For singleton types, filter out the "Create new" option
     newDocumentOptions: (prev, { creationContext }) => {
       if (creationContext.type === 'global') {
-        return prev.filter((template) => template.templateId !== 'heroVideoReel');
+        return prev.filter((template) => !['heroVideoReel', 'personalInfo'].includes(template.templateId));
       }
       return prev;
     },
     // For singleton types, only allow update, publish, discardChanges
     actions: (prev, { schemaType }) => {
-      if (schemaType === 'heroVideoReel') {
+      if (['heroVideoReel', 'personalInfo'].includes(schemaType)) {
         return prev.filter(({ action }) =>
           ['publish', 'discardChanges', 'restore'].includes(action || '')
         );

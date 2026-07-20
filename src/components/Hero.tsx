@@ -10,6 +10,11 @@ interface HeroProps {
 export default function Hero({ onContactClick }: HeroProps) {
   const [videos, setVideos] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [personalInfo, setPersonalInfo] = useState({
+    greeting: 'Hello There!',
+    name: "I'm Alexander Robertson",
+    bio: 'A passionate graphic designer specializing in immersive 3D landscapes, sleek brand identities, and futuristic visual experiences. Turning bold concepts into striking digital realities.',
+  });
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const scrollToProjects = () => {
@@ -22,19 +27,34 @@ export default function Hero({ onContactClick }: HeroProps) {
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const query = `*[_id == "heroVideoReel"][0]{
-          videos[]{
-            "url": videoFile.asset->url
+        const query = `{
+          "hero": *[_id == "heroVideoReel"][0]{
+            videos[]{
+              "url": videoFile.asset->url
+            }
+          },
+          "info": *[_id == "personalInfo"][0]{
+            greeting,
+            name,
+            bio
           }
         }`;
-        const data = await client.fetch<{ videos?: { url: string }[] } | null>(query);
+        const data = await client.fetch<{ hero?: { videos?: { url: string }[] }, info?: any } | null>(query);
         
-        if (data && data.videos) {
-          const videoUrls = data.videos.map(v => v.url).filter(Boolean);
+        if (data?.hero?.videos) {
+          const videoUrls = data.hero.videos.map((v: any) => v.url).filter(Boolean);
           setVideos(videoUrls);
         }
+        
+        if (data?.info) {
+          setPersonalInfo({
+            greeting: data.info.greeting || 'Hello There!',
+            name: data.info.name || "I'm Alexander Robertson",
+            bio: data.info.bio || 'A passionate graphic designer specializing in immersive 3D landscapes, sleek brand identities, and futuristic visual experiences. Turning bold concepts into striking digital realities.',
+          });
+        }
       } catch (error) {
-        console.error('Error fetching hero videos:', error);
+        console.error('Error fetching hero data:', error);
       }
     };
 
@@ -94,13 +114,13 @@ export default function Hero({ onContactClick }: HeroProps) {
           className="max-w-2xl text-white"
         >
           <p className="text-xs md:text-base font-semibold tracking-widest text-zinc-400 mb-4 uppercase">
-            Hello There!
+            {personalInfo.greeting}
           </p>
           <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight mb-4 md:mb-6">
-            I'm Alexander Robertson
+            {personalInfo.name}
           </h1>
           <p className="text-sm md:text-lg lg:text-xl text-zinc-300 mb-8 md:mb-10 leading-relaxed font-light">
-            A passionate graphic designer specializing in immersive 3D landscapes, sleek brand identities, and futuristic visual experiences. Turning bold concepts into striking digital realities.
+            {personalInfo.bio}
           </p>
           
           <div className="flex flex-wrap gap-4">
