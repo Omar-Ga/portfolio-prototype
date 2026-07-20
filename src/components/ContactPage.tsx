@@ -1,7 +1,8 @@
-import { motion, type Variants } from 'framer-motion';
+import { motion, type Variants, AnimatePresence } from 'framer-motion';
+import { useEffect, useState, useRef } from 'react';
 import { FaInstagram, FaTiktok, FaDiscord } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
-import contactHero from '../assets/contact-hero.webp';
+import { client } from '../sanityClient';
 
 interface ContactPageProps {
   isDark: boolean;
@@ -15,6 +16,47 @@ const socialLinks = [
 ];
 
 export default function ContactPage({ isDark }: ContactPageProps) {
+  const [videos, setVideos] = useState<string[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const query = `*[_id == "contactVideoReel"][0]{
+          videos[]{
+            "url": videoFile.asset->url
+          }
+        }`;
+        const data = await client.fetch<{ videos?: { url: string }[] } | null>(query);
+        
+        if (data?.videos) {
+          const videoUrls = data.videos.map((v: any) => v.url).filter(Boolean);
+          setVideos(videoUrls);
+        }
+      } catch (error) {
+        console.error('Error fetching contact video reel:', error);
+      }
+    };
+
+    fetchVideos();
+  }, []);
+
+  const handleVideoEnd = () => {
+    if (videos.length > 1) {
+      setCurrentIndex((prev) => (prev + 1) % videos.length);
+    }
+  };
+
+  useEffect(() => {
+    if (videoRef.current && videos.length > 0) {
+      videoRef.current.load();
+      videoRef.current.play().catch(err => console.log("Auto-play prevented:", err));
+    }
+  }, [currentIndex, videos]);
+
+  const currentVideoSrc = videos.length > 0 ? videos[currentIndex] : null;
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -38,24 +80,31 @@ export default function ContactPage({ isDark }: ContactPageProps) {
         initial={{ opacity: 0, scale: 1.1 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
-        className="w-full md:w-1/2 h-[50vh] md:h-screen sticky top-0 overflow-hidden z-0"
+        className="w-full md:w-1/2 h-[50vh] md:h-screen sticky top-0 overflow-hidden z-0 bg-black"
       >
-        <motion.img 
-          src={contactHero} 
-          alt="Alexander Robertson graphic design workspace and creative artwork" 
-          className="w-full h-full object-cover"
-          animate={{ 
-            scale: [1, 1.05, 1],
-            rotate: [0, 1, 0]
-          }}
-          transition={{ 
-            duration: 20, 
-            repeat: Infinity, 
-            ease: "linear" 
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent" />
-        <div className={`absolute inset-0 backdrop-blur-[2px] pointer-events-none ${isDark ? 'mix-blend-overlay opacity-30' : 'mix-blend-multiply opacity-10'}`} />
+        <AnimatePresence initial={false}>
+          {currentVideoSrc ? (
+            <motion.video 
+              ref={videoRef}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.2, ease: "easeInOut" }}
+              autoPlay 
+              muted 
+              playsInline
+              onEnded={handleVideoEnd}
+              className="absolute top-0 left-0 w-full h-full object-cover z-0"
+              key={currentVideoSrc}
+            >
+              <source src={currentVideoSrc} type={currentVideoSrc.endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
+            </motion.video>
+          ) : (
+            <div className="absolute inset-0 bg-black/10 flex items-center justify-center text-white/50 text-sm z-0"></div>
+          )}
+        </AnimatePresence>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent pointer-events-none z-10" />
+        <div className={`absolute inset-0 backdrop-blur-[2px] pointer-events-none z-10 ${isDark ? 'mix-blend-overlay opacity-30' : 'mix-blend-multiply opacity-10'}`} />
         
         {/* Mobile Reveal Gradient Overlay */}
         <div className={`absolute inset-0 md:hidden bg-gradient-to-t via-transparent to-transparent pointer-events-none ${isDark ? 'from-zinc-900' : 'from-white'}`} />

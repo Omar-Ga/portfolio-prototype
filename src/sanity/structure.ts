@@ -14,6 +14,14 @@ export const structure: StructureResolver = (S) =>
             .title('Main Hero Reel')
         ),
       S.listItem()
+        .title('Contact Video Reel')
+        .child(
+          S.document()
+            .schemaType('contactVideoReel')
+            .documentId('contactVideoReel')
+            .title('Contact Video Reel')
+        ),
+      S.listItem()
         .title('Personal Info')
         .child(
           S.document()
@@ -24,6 +32,6 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
       // Regular content types (exclude the singleton to avoid duplication)
       ...S.documentTypeListItems().filter(
-        (listItem) => !['heroVideoReel', 'personalInfo'].includes(listItem.getId() as string)
+        (listItem) => !['heroVideoReel', 'contactVideoReel', 'personalInfo'].includes(listItem.getId() as string)
       ),
     ]);
