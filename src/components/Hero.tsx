@@ -27,15 +27,15 @@ export default function Hero({ onContactClick }: HeroProps) {
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const query = `*[_type == "heroVideoReel"]{
+        const query = `*[_id == "heroVideoReel"][0]{
           videos[]{
             "url": videoFile.asset->url
           }
         }`;
-        const data = await client.fetch<VideoReel[]>(query);
+        const data = await client.fetch<{ videos?: { url: string }[] } | null>(query);
         
-        if (data && data.length > 0) {
-          const videoUrls = data.flatMap(doc => doc.videos ? doc.videos.map(v => v.url) : []);
+        if (data && data.videos) {
+          const videoUrls = data.videos.map(v => v.url).filter(Boolean);
           setVideos(videoUrls);
         }
       } catch (error) {
