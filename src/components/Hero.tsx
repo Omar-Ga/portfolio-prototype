@@ -6,11 +6,6 @@ interface HeroProps {
   onContactClick?: () => void;
 }
 
-interface VideoReel {
-  videos: {
-    url: string;
-  }[];
-}
 
 export default function Hero({ onContactClick }: HeroProps) {
   const [videos, setVideos] = useState<string[]>([]);
