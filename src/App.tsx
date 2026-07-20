@@ -129,7 +129,7 @@ function App() {
   };
 
   return (
-    <div className={`${currentPage === 'contact' ? 'min-h-screen' : 'min-h-screen'} font-sans transition-colors duration-500 ${isDark ? 'bg-zinc-900 text-zinc-50' : 'bg-white text-zinc-900'}`}>
+    <div className={`${currentPage === 'contact' ? 'min-h-screen md:h-screen md:overflow-hidden' : 'min-h-screen'} font-sans transition-colors duration-500 ${isDark ? 'bg-zinc-900 text-zinc-50' : 'bg-white text-zinc-900'}`}>
       <Navbar 
         isDark={isDark} 
         toggleTheme={toggleTheme} 
@@ -252,6 +252,7 @@ function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
+            className="h-full md:h-screen md:overflow-hidden"
           >
             <ContactPage isDark={isDark} />
           </motion.div>

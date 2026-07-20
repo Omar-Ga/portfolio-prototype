@@ -74,7 +74,7 @@ export default function ContactPage({ isDark }: ContactPageProps) {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col md:flex-row ${isDark ? 'text-white' : 'text-zinc-900'} ${isDark ? 'md:bg-zinc-900' : 'md:bg-white'}`}>
+    <div className={`min-h-screen md:h-screen md:overflow-hidden flex flex-col md:flex-row ${isDark ? 'text-white' : 'text-zinc-900'} ${isDark ? 'md:bg-zinc-900' : 'md:bg-white'}`}>
       {/* Left Side: Imagery */}
       <motion.div 
         initial={{ opacity: 0, scale: 1.1 }}
@@ -111,7 +111,7 @@ export default function ContactPage({ isDark }: ContactPageProps) {
       </motion.div>
 
       {/* Right Side: Contact Form */}
-      <div className={`w-full md:w-1/2 min-h-screen flex flex-col justify-center px-8 md:px-16 lg:px-24 pt-16 md:pt-32 pb-10 relative z-10 ${isDark ? 'bg-zinc-900' : 'bg-white'}`}>
+      <div className={`w-full md:w-1/2 min-h-screen md:min-h-0 md:h-screen flex flex-col justify-center px-8 md:px-12 lg:px-20 pt-20 md:pt-24 pb-6 md:pb-8 relative z-10 ${isDark ? 'bg-zinc-900' : 'bg-white'}`}>
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -120,58 +120,58 @@ export default function ContactPage({ isDark }: ContactPageProps) {
         >
           <motion.h2 
             variants={itemVariants}
-            className={`text-4xl md:text-5xl font-black uppercase tracking-widest mb-2 font-['Outfit'] ${isDark ? 'text-white' : 'text-zinc-900'}`}
+            className={`text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-widest mb-1.5 font-['Outfit'] ${isDark ? 'text-white' : 'text-zinc-900'}`}
           >
             Get In Touch
           </motion.h2>
           <motion.p 
             variants={itemVariants}
-            className={`text-sm mb-12 uppercase tracking-[0.2em] font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}
+            className={`text-xs md:text-sm mb-6 md:mb-8 uppercase tracking-[0.2em] font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}
           >
             Let's build something exceptional together.
           </motion.p>
 
-          <form className="space-y-4 md:space-y-6">
+          <form className="space-y-3 md:space-y-4">
             <motion.div variants={itemVariants} className="group relative">
-              <label className={`block text-[10px] uppercase tracking-[0.3em] font-bold mb-2 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-white' : 'text-zinc-400 group-focus-within:text-zinc-900'}`}>
+              <label className={`block text-[10px] uppercase tracking-[0.3em] font-bold mb-1 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-white' : 'text-zinc-400 group-focus-within:text-zinc-900'}`}>
                 Full Name
               </label>
               <input 
                 type="text" 
-                className={`w-full bg-transparent border-b py-3 focus:outline-none transition-all font-['Outfit']
+                className={`w-full bg-transparent border-b py-2 focus:outline-none transition-all font-['Outfit']
                   ${isDark ? 'border-zinc-800 focus:border-white text-white' : 'border-zinc-200 focus:border-zinc-900 text-zinc-900'}`}
               />
             </motion.div>
 
             <motion.div variants={itemVariants} className="group relative">
-              <label className={`block text-[10px] uppercase tracking-[0.3em] font-bold mb-2 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-white' : 'text-zinc-400 group-focus-within:text-zinc-900'}`}>
+              <label className={`block text-[10px] uppercase tracking-[0.3em] font-bold mb-1 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-white' : 'text-zinc-400 group-focus-within:text-zinc-900'}`}>
                 Email Address
               </label>
               <input 
                 type="email" 
-                className={`w-full bg-transparent border-b py-3 focus:outline-none transition-all font-['Outfit']
+                className={`w-full bg-transparent border-b py-2 focus:outline-none transition-all font-['Outfit']
                   ${isDark ? 'border-zinc-800 focus:border-white text-white' : 'border-zinc-200 focus:border-zinc-900 text-zinc-900'}`}
               />
             </motion.div>
 
             <motion.div variants={itemVariants} className="group relative">
-              <label className={`block text-[10px] uppercase tracking-[0.3em] font-bold mb-2 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-white' : 'text-zinc-400 group-focus-within:text-zinc-900'}`}>
+              <label className={`block text-[10px] uppercase tracking-[0.3em] font-bold mb-1 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-white' : 'text-zinc-400 group-focus-within:text-zinc-900'}`}>
                 Project Request Name
               </label>
               <input 
                 type="text" 
-                className={`w-full bg-transparent border-b py-3 focus:outline-none transition-all font-['Outfit']
+                className={`w-full bg-transparent border-b py-2 focus:outline-none transition-all font-['Outfit']
                   ${isDark ? 'border-zinc-800 focus:border-white text-white' : 'border-zinc-200 focus:border-zinc-900 text-zinc-900'}`}
               />
             </motion.div>
 
             <motion.div variants={itemVariants} className="group relative">
-              <label className={`block text-[10px] uppercase tracking-[0.3em] font-bold mb-2 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-white' : 'text-zinc-400 group-focus-within:text-zinc-900'}`}>
+              <label className={`block text-[10px] uppercase tracking-[0.3em] font-bold mb-1 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-white' : 'text-zinc-400 group-focus-within:text-zinc-900'}`}>
                 Project Details
               </label>
               <textarea 
-                rows={4}
-                className={`w-full bg-transparent border-b py-3 focus:outline-none transition-all font-['Outfit'] resize-none
+                rows={3}
+                className={`w-full bg-transparent border-b py-2 focus:outline-none transition-all font-['Outfit'] resize-none
                   ${isDark ? 'border-zinc-800 focus:border-white text-white' : 'border-zinc-200 focus:border-zinc-900 text-zinc-900'}`}
               />
             </motion.div>
@@ -180,7 +180,7 @@ export default function ContactPage({ isDark }: ContactPageProps) {
               variants={itemVariants}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className={`w-full py-5 text-[11px] font-black uppercase tracking-[0.4em] transition-all duration-500 mt-10
+              className={`w-full py-4 text-[11px] font-black uppercase tracking-[0.4em] transition-all duration-500 mt-6 md:mt-8
                 ${isDark 
                   ? 'bg-white text-black hover:bg-zinc-200 shadow-2xl shadow-white/5' 
                   : 'bg-zinc-900 text-white hover:bg-black shadow-2xl shadow-black/10'}`}
@@ -192,7 +192,7 @@ export default function ContactPage({ isDark }: ContactPageProps) {
           {/* Social Icons Section */}
           <motion.div 
             variants={itemVariants}
-            className="mt-8 md:mt-12 flex items-center justify-center md:justify-start gap-8"
+            className="mt-6 md:mt-8 flex items-center justify-center md:justify-start gap-8"
           >
             {socialLinks.map((social) => (
               <a 
