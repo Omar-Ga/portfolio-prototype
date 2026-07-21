@@ -8,6 +8,8 @@ interface ContactPageProps {
   isDark: boolean;
 }
 
+const COOLDOWN_TIME = 60; // Rate limit cooldown in seconds
+
 const socialLinks = [
   { icon: FaInstagram, href: 'https://www.instagram.com/the_volumetric_cube/', label: 'Instagram' },
   { icon: FaTiktok, href: 'https://www.tiktok.com/@the_volumetric_cube', label: 'TikTok' },
@@ -23,6 +25,26 @@ export default function ContactPage({ isDark }: ContactPageProps) {
   const [result, setResult] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [deadline, setDeadline] = useState<string>("");
+  const [cooldownRemaining, setCooldownRemaining] = useState<number>(0);
+
+  // Check rate limiting cooldown from sessionStorage
+  useEffect(() => {
+    const checkCooldown = () => {
+      const lastSubmit = sessionStorage.getItem("last_form_submit_time");
+      if (lastSubmit) {
+        const elapsed = Math.floor((Date.now() - parseInt(lastSubmit, 10)) / 1000);
+        if (elapsed < COOLDOWN_TIME) {
+          setCooldownRemaining(COOLDOWN_TIME - elapsed);
+          return;
+        }
+      }
+      setCooldownRemaining(0);
+    };
+
+    checkCooldown();
+    const interval = setInterval(checkCooldown, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -75,11 +97,24 @@ export default function ContactPage({ isDark }: ContactPageProps) {
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setIsSubmitting(true);
-    setResult("Sending....");
+
+    if (cooldownRemaining > 0) {
+      setResult(`Please wait ${cooldownRemaining}s before submitting again.`);
+      return;
+    }
 
     const form = event.currentTarget;
     const formData = new FormData(form);
+
+    // Honeypot bot protection check
+    if (formData.get("botcheck")) {
+      setResult("Form Submitted Successfully");
+      form.reset();
+      return;
+    }
+
+    setIsSubmitting(true);
+    setResult("Sending....");
     formData.append("access_key", "f8ae9278-1196-4a19-8ace-659e79875f0a");
 
     try {
@@ -93,6 +128,8 @@ export default function ContactPage({ isDark }: ContactPageProps) {
         setResult("Form Submitted Successfully");
         form.reset();
         setDeadline("");
+        sessionStorage.setItem("last_form_submit_time", Date.now().toString());
+        setCooldownRemaining(COOLDOWN_TIME);
       } else {
         setResult(data.message || "Error submitting form. Please try again.");
       }
@@ -178,6 +215,16 @@ export default function ContactPage({ isDark }: ContactPageProps) {
           </motion.p>
 
           <form onSubmit={onSubmit} className="space-y-3 md:space-y-4">
+            {/* Honeypot Field */}
+            <input 
+              type="checkbox" 
+              name="botcheck" 
+              className="hidden" 
+              style={{ display: 'none' }} 
+              tabIndex={-1} 
+              autoComplete="off" 
+            />
+
             <motion.div variants={itemVariants} className="group relative">
               <label className={`block text-[10px] uppercase tracking-[0.3em] font-bold mb-1 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-white' : 'text-zinc-400 group-focus-within:text-zinc-900'}`}>
                 Full Name
@@ -234,16 +281,20 @@ export default function ContactPage({ isDark }: ContactPageProps) {
 
             <motion.button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || cooldownRemaining > 0}
               variants={itemVariants}
-              whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
-              whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+              whileHover={{ scale: (isSubmitting || cooldownRemaining > 0) ? 1 : 1.02 }}
+              whileTap={{ scale: (isSubmitting || cooldownRemaining > 0) ? 1 : 0.98 }}
               className={`w-full py-4 text-[11px] font-black uppercase tracking-[0.4em] transition-all duration-500 mt-6 md:mt-8 flex items-center justify-center gap-2
                 ${isDark 
                   ? 'bg-white text-black hover:bg-zinc-200 shadow-2xl shadow-white/5 disabled:opacity-50' 
                   : 'bg-zinc-900 text-white hover:bg-black shadow-2xl shadow-black/10 disabled:opacity-50'}`}
             >
-              {isSubmitting ? 'Sending...' : 'Send Request'}
+              {isSubmitting 
+                ? 'Sending...' 
+                : cooldownRemaining > 0 
+                ? `Please Wait (${cooldownRemaining}s)` 
+                : 'Send Request'}
             </motion.button>
           </form>
 
@@ -290,4 +341,5 @@ export default function ContactPage({ isDark }: ContactPageProps) {
     </div>
   );
 }
+
 
