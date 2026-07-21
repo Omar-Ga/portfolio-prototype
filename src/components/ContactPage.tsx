@@ -20,6 +20,10 @@ export default function ContactPage({ isDark }: ContactPageProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  const [result, setResult] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [deadline, setDeadline] = useState<string>("");
+
   useEffect(() => {
     const fetchVideos = async () => {
       try {
@@ -56,6 +60,48 @@ export default function ContactPage({ isDark }: ContactPageProps) {
   }, [currentIndex, videos]);
 
   const currentVideoSrc = videos.length > 0 ? videos[currentIndex] : null;
+
+  const handleDeadlineChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    const rawDigits = val.replace(/\D/g, '').slice(0, 6);
+    let formatted = rawDigits;
+    if (rawDigits.length > 4) {
+      formatted = `${rawDigits.slice(0, 2)}/${rawDigits.slice(2, 4)}/${rawDigits.slice(4)}`;
+    } else if (rawDigits.length > 2) {
+      formatted = `${rawDigits.slice(0, 2)}/${rawDigits.slice(2)}`;
+    }
+    setDeadline(formatted);
+  };
+
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setResult("Sending....");
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    formData.append("access_key", "f8ae9278-1196-4a19-8ace-659e79875f0a");
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setResult("Form Submitted Successfully");
+        form.reset();
+        setDeadline("");
+      } else {
+        setResult(data.message || "Error submitting form. Please try again.");
+      }
+    } catch (error) {
+      setResult("Error submitting form. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -131,13 +177,15 @@ export default function ContactPage({ isDark }: ContactPageProps) {
             Let's build something exceptional together.
           </motion.p>
 
-          <form className="space-y-3 md:space-y-4">
+          <form onSubmit={onSubmit} className="space-y-3 md:space-y-4">
             <motion.div variants={itemVariants} className="group relative">
               <label className={`block text-[10px] uppercase tracking-[0.3em] font-bold mb-1 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-white' : 'text-zinc-400 group-focus-within:text-zinc-900'}`}>
                 Full Name
               </label>
               <input 
                 type="text" 
+                name="name"
+                required
                 className={`w-full bg-transparent border-b py-2 focus:outline-none transition-all font-['Outfit']
                   ${isDark ? 'border-zinc-800 focus:border-white text-white' : 'border-zinc-200 focus:border-zinc-900 text-zinc-900'}`}
               />
@@ -149,6 +197,8 @@ export default function ContactPage({ isDark }: ContactPageProps) {
               </label>
               <input 
                 type="email" 
+                name="email"
+                required
                 className={`w-full bg-transparent border-b py-2 focus:outline-none transition-all font-['Outfit']
                   ${isDark ? 'border-zinc-800 focus:border-white text-white' : 'border-zinc-200 focus:border-zinc-900 text-zinc-900'}`}
               />
@@ -156,10 +206,14 @@ export default function ContactPage({ isDark }: ContactPageProps) {
 
             <motion.div variants={itemVariants} className="group relative">
               <label className={`block text-[10px] uppercase tracking-[0.3em] font-bold mb-1 transition-colors ${isDark ? 'text-zinc-500 group-focus-within:text-white' : 'text-zinc-400 group-focus-within:text-zinc-900'}`}>
-                Project Request Name
+                Expected Deadline ( Optional )
               </label>
               <input 
-                type="text" 
+                type="text"
+                name="expected_deadline"
+                value={deadline}
+                onChange={handleDeadlineChange}
+                placeholder="DD/MM/YY"
                 className={`w-full bg-transparent border-b py-2 focus:outline-none transition-all font-['Outfit']
                   ${isDark ? 'border-zinc-800 focus:border-white text-white' : 'border-zinc-200 focus:border-zinc-900 text-zinc-900'}`}
               />
@@ -170,6 +224,8 @@ export default function ContactPage({ isDark }: ContactPageProps) {
                 Project Details
               </label>
               <textarea 
+                name="message"
+                required
                 rows={3}
                 className={`w-full bg-transparent border-b py-2 focus:outline-none transition-all font-['Outfit'] resize-none
                   ${isDark ? 'border-zinc-800 focus:border-white text-white' : 'border-zinc-200 focus:border-zinc-900 text-zinc-900'}`}
@@ -177,17 +233,35 @@ export default function ContactPage({ isDark }: ContactPageProps) {
             </motion.div>
 
             <motion.button
+              type="submit"
+              disabled={isSubmitting}
               variants={itemVariants}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className={`w-full py-4 text-[11px] font-black uppercase tracking-[0.4em] transition-all duration-500 mt-6 md:mt-8
+              whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
+              whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+              className={`w-full py-4 text-[11px] font-black uppercase tracking-[0.4em] transition-all duration-500 mt-6 md:mt-8 flex items-center justify-center gap-2
                 ${isDark 
-                  ? 'bg-white text-black hover:bg-zinc-200 shadow-2xl shadow-white/5' 
-                  : 'bg-zinc-900 text-white hover:bg-black shadow-2xl shadow-black/10'}`}
+                  ? 'bg-white text-black hover:bg-zinc-200 shadow-2xl shadow-white/5 disabled:opacity-50' 
+                  : 'bg-zinc-900 text-white hover:bg-black shadow-2xl shadow-black/10 disabled:opacity-50'}`}
             >
-              Send Request
+              {isSubmitting ? 'Sending...' : 'Send Request'}
             </motion.button>
           </form>
+
+          {result && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`mt-4 text-xs tracking-wider uppercase font-semibold text-center py-2.5 px-4 rounded font-['Outfit'] ${
+                result.toLowerCase().includes('success')
+                  ? isDark ? 'text-emerald-400 bg-emerald-950/40 border border-emerald-800/40' : 'text-emerald-600 bg-emerald-50 border border-emerald-200'
+                  : result.toLowerCase().includes('sending')
+                  ? isDark ? 'text-zinc-400' : 'text-zinc-500'
+                  : isDark ? 'text-rose-400 bg-rose-950/40 border border-rose-800/40' : 'text-rose-600 bg-rose-50 border border-rose-200'
+              }`}
+            >
+              {result}
+            </motion.div>
+          )}
 
           {/* Social Icons Section */}
           <motion.div 
@@ -216,3 +290,4 @@ export default function ContactPage({ isDark }: ContactPageProps) {
     </div>
   );
 }
+
